@@ -1,4 +1,4 @@
-name: server-sec-2025
+name: collab-courses
 
 services:
   pg:

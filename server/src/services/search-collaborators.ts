@@ -14,6 +14,7 @@ interface SearchCollaboratorsParams {
 	nome?: string;
 	setorIds?: string[];
 	cargoIds?: string[];
+	statuses?: string[];
 	pageIndex: number;
 	pageSize: number;
 }
@@ -22,6 +23,7 @@ export async function searchCollaboratorsWithTrainingStatus({
 	nome,
 	setorIds,
 	cargoIds,
+	statuses,
 	pageIndex,
 	pageSize,
 }: SearchCollaboratorsParams) {
@@ -40,6 +42,16 @@ export async function searchCollaboratorsWithTrainingStatus({
 
 	if (setorIds && setorIds.length > 0) {
 		conditions.push(inArray(cargo.setor, setorIds));
+	}
+
+	if (statuses && statuses.length > 0) {
+		conditions.push(sql`COUNT(*) FILTER (WHERE
+			CASE
+				WHEN ${treinamentoColaborador.realizacao} IS NULL THEN 'nao_realizado'
+				WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval < CURRENT_DATE THEN 'vencido'
+				WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval <= (CURRENT_DATE + INTERVAL '1 month') THEN 'vencendo'
+				ELSE 'no_prazo'
+			END IN (${statuses}) ) > 0`);
 	}
 
 	const where = conditions.length > 0 ? and(...conditions) : undefined;

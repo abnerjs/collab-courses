@@ -12,6 +12,7 @@ export const getCollabSummary: FastifyPluginAsyncZod = async (app) => {
 				headers: z.object({
 					"x-cargos": z.string().optional(),
 					"x-setores": z.string().optional(),
+					"x-statuses": z.string().optional(),
 				}),
 				querystring: z.object({
 					nome: z.string().optional(),
@@ -45,6 +46,25 @@ export const getCollabSummary: FastifyPluginAsyncZod = async (app) => {
 			const { nome, page } = request.query as { nome?: string; page: number };
 			const cargosHeader = request.headers["x-cargos"];
 			const setoresHeader = request.headers["x-setores"];
+			const statusesHeader = request.headers["x-statuses"];
+			const statuses =
+				typeof statusesHeader === "string"
+					? statusesHeader.split(",")
+					: Array.isArray(statusesHeader)
+						? statusesHeader
+						: undefined;
+			if (
+				statuses &&
+				statuses.length > 0 &&
+				!["no_prazo", "vencido", "vencendo", "nao_realizado"].every((s) =>
+					statuses.includes(s),
+				)
+			) {
+				return reply.status(400).send({
+					error:
+						"Invalid status filter. Allowed values are: no_prazo, vencido, vencendo, nao_realizado.",
+				});
+			}
 			const cargos =
 				typeof cargosHeader === "string"
 					? cargosHeader.split(",")
@@ -65,6 +85,7 @@ export const getCollabSummary: FastifyPluginAsyncZod = async (app) => {
 				nome,
 				setorIds: setores,
 				cargoIds: cargos,
+				statuses: statuses,
 				pageIndex: page,
 				pageSize,
 			});

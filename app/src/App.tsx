@@ -1,7 +1,11 @@
+import { CollabTable } from "./components/collab-table";
+import { Navbar } from "./components/navbar";
+
 function App() {
 	return (
 		<>
-			<h1 className="text-3xl font-bold">ola mundo</h1>
+			<Navbar />
+			<CollabTable />
 		</>
 	);
 }

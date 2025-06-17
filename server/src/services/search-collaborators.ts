@@ -1,3 +1,4 @@
+// no seu arquivo de serviço: search-collaborators.ts
 import { and, count, eq, ilike, inArray, sql } from "drizzle-orm";
 import { db } from "../db";
 import {
@@ -13,125 +14,111 @@ interface SearchCollaboratorsParams {
 	nome?: string;
 	setorIds?: string[];
 	cargoIds?: string[];
-	pageIndex?: number;
-	pageSize?: number;
+	pageIndex: number;
+	pageSize: number;
 }
 
 export async function searchCollaboratorsWithTrainingStatus({
 	nome,
 	setorIds,
 	cargoIds,
-	pageIndex = 0,
-	pageSize = 10,
+	pageIndex,
+	pageSize,
 }: SearchCollaboratorsParams) {
-	const requiredTrainings = db.$with("required_trainings").as(
-		db
-			.select({
-				colaboradorId: colaborador.id,
-				cargoId: colaborador.cargo,
-				treinamentoId: cargoTreinamento.treinamento,
-			})
-			.from(colaborador)
-			.innerJoin(
-				cargoTreinamento,
-				eq(colaborador.cargo, cargoTreinamento.cargo),
-			),
-	);
+	const conditions = [];
 
-	const trainingsStatus = db.$with("trainings_status").as(
-		db
-			.with(requiredTrainings)
-			.select({
-				colaboradorId: requiredTrainings.colaboradorId,
-				status: sql<
-					"no_prazo" | "vencendo" | "vencido" | "nao_realizado"
-				> /*sql*/`
-          CASE
-            WHEN tc.id IS NULL THEN 'nao_realizado'
-            WHEN (tc.data_realizacao + (t.validade || ' days')::interval) < NOW() THEN 'vencido'
-            WHEN (tc.data_realizacao + (t.validade || ' days')::interval) <= (NOW() + '1 month'::interval) THEN 'vencendo'
-            ELSE 'no_prazo'
-          END
-        `.as("status"),
-			})
-			.from(requiredTrainings)
-			.leftJoin(
-				treinamentoColaborador,
-				and(
-					eq(
-						requiredTrainings.colaboradorId,
-						treinamentoColaborador.colaborador,
-					),
-					eq(
-						requiredTrainings.treinamentoId,
-						treinamentoColaborador.treinamento,
-					),
-				),
-			)
-			.innerJoin(
-				treinamento,
-				eq(requiredTrainings.treinamentoId, treinamento.id),
-			),
-	);
+	if (nome) {
+		const tokens = nome.split(" ").filter((t) => t.length > 0);
+		for (const token of tokens) {
+			conditions.push(ilike(sql`unaccent(${colaborador.nome})`, `%${token}%`));
+		}
+	}
 
-	const whereClauses = and(
-		nome ? ilike(colaborador.nome, `%${nome}%`) : undefined,
-		setorIds && setorIds.length > 0
-			? inArray(cargo.setor, setorIds)
-			: undefined,
-		cargoIds && cargoIds.length > 0
-			? inArray(colaborador.cargo, cargoIds)
-			: undefined,
-	);
+	if (cargoIds && cargoIds.length > 0) {
+		conditions.push(inArray(colaborador.cargo, cargoIds));
+	}
 
-	const collaboratorsWithStatus = await db
-		.with(trainingsStatus)
+	if (setorIds && setorIds.length > 0) {
+		conditions.push(inArray(cargo.setor, setorIds));
+	}
+
+	const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+	const pageSizeParam = pageSize ?? 25;
+	const page = pageIndex ?? 0;
+	const offset = page * pageSize;
+
+	const data = await db
 		.select({
 			id: colaborador.id,
-			nome: colaborador.nome,
+			nomeColaborador: colaborador.nome,
 			cargo: cargo.descricao,
 			setor: setor.descricao,
-			noPrazo: count(sql`CASE WHEN status = 'no_prazo' THEN 1 END`).mapWith(
-				Number,
-			),
-			vencendo: count(sql`CASE WHEN status = 'vencendo' THEN 1 END`).mapWith(
-				Number,
-			),
-			vencido: count(sql`CASE WHEN status = 'vencido' THEN 1 END`).mapWith(
-				Number,
-			),
-			naoRealizado: count(
-				sql`CASE WHEN status = 'nao_realizado' THEN 1 END`,
-			).mapWith(Number),
+			noPrazo: sql<number>`COUNT(*) FILTER (WHERE
+		CASE
+			WHEN ${treinamentoColaborador.realizacao} IS NULL THEN 'nao_realizado'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval < CURRENT_DATE THEN 'vencido'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval <= (CURRENT_DATE + INTERVAL '1 month') THEN 'vencendo'
+			ELSE 'no_prazo'
+		END = 'no_prazo')`,
+			vencendo: sql<number>`COUNT(*) FILTER (WHERE
+		CASE
+			WHEN ${treinamentoColaborador.realizacao} IS NULL THEN 'nao_realizado'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval < CURRENT_DATE THEN 'vencido'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval <= (CURRENT_DATE + INTERVAL '1 month') THEN 'vencendo'
+			ELSE 'no_prazo'
+		END = 'vencendo')`,
+			vencido: sql<number>`COUNT(*) FILTER (WHERE
+		CASE
+			WHEN ${treinamentoColaborador.realizacao} IS NULL THEN 'nao_realizado'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval < CURRENT_DATE THEN 'vencido'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval <= (CURRENT_DATE + INTERVAL '1 month') THEN 'vencendo'
+			ELSE 'no_prazo'
+		END = 'vencido')`,
+			naoRealizado: sql<number>`COUNT(*) FILTER (WHERE
+		CASE
+			WHEN ${treinamentoColaborador.realizacao} IS NULL THEN 'nao_realizado'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval < CURRENT_DATE THEN 'vencido'
+			WHEN ${treinamentoColaborador.realizacao} + (${treinamento.validade} || ' days')::interval <= (CURRENT_DATE + INTERVAL '1 month') THEN 'vencendo'
+			ELSE 'no_prazo'
+		END = 'nao_realizado')`,
 		})
 		.from(colaborador)
 		.innerJoin(cargo, eq(colaborador.cargo, cargo.id))
 		.innerJoin(setor, eq(cargo.setor, setor.id))
+		.innerJoin(cargoTreinamento, eq(colaborador.cargo, cargoTreinamento.cargo))
+		.innerJoin(treinamento, eq(treinamento.id, cargoTreinamento.treinamento))
 		.leftJoin(
-			trainingsStatus,
-			eq(colaborador.id, trainingsStatus.colaboradorId),
+			treinamentoColaborador,
+			and(
+				eq(treinamentoColaborador.colaborador, colaborador.id),
+				eq(treinamentoColaborador.treinamento, treinamento.id),
+			),
 		)
-		.where(whereClauses)
-		.groupBy(colaborador.id, cargo.descricao, setor.descricao)
-		.orderBy(colaborador.nome)
-		.limit(pageSize)
-		.offset(pageIndex * pageSize);
+		.where(where)
+		.groupBy(colaborador.id, colaborador.nome, cargo.descricao, setor.descricao)
+		.limit(pageSizeParam)
+		.offset(offset);
 
-	const totalCountResult = await db
-		.select({
-			count: count().mapWith(Number),
-		})
+	const total = await db
+		.select({ count: sql<number>`COUNT(DISTINCT ${colaborador.id})` })
 		.from(colaborador)
 		.innerJoin(cargo, eq(colaborador.cargo, cargo.id))
-		.where(whereClauses);
+		.innerJoin(setor, eq(cargo.setor, setor.id))
+		.innerJoin(cargoTreinamento, eq(colaborador.cargo, cargoTreinamento.cargo))
+		.innerJoin(treinamento, eq(treinamento.id, cargoTreinamento.treinamento))
+		.where(where);
+
+	const totalRecords = Number(total[0]?.count ?? 0);
+	const totalPages = Math.ceil(totalRecords / pageSizeParam);
 
 	return {
-		collaborators: collaboratorsWithStatus,
+		data: data,
 		meta: {
-			total: totalCountResult[0].count,
-			pageIndex,
-			pageSize,
-			pageCount: Math.ceil(totalCountResult[0].count / pageSize),
+			total: totalRecords,
+			pageIndex: page,
+			pageSize: pageSizeParam,
+			pageCount: totalPages,
 		},
 	};
 }

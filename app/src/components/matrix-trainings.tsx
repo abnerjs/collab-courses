@@ -49,9 +49,9 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 
 	return (
 		<div className="w-full px-8 flex flex-1">
-			<div className="overflow-auto max-h-[calc(100vh-89px)]">
-				<Table className="pt-20">
-					<TableHeader className="sticky top-0 bg-white z-10">
+			<div className="overflow-x-auto overflow-y-hidden max-h-[calc(100dvh-89px)] flex">
+				<Table className="pt-20 overflow-auto">
+					<TableHeader className="sticky top-0 bg-white z-30">
 						<TableRow>
 							<TableHead className="sticky left-0 bg-white z-20">
 								Cargo

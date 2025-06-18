@@ -51,7 +51,7 @@ const components: { title: string; href: string; description: string }[] = [
 
 export function Navbar() {
 	return (
-		<div className="flex px-8 py-4 items-center justify-between w-full z-10">
+		<div className="flex px-8 py-4 items-center justify-between w-full">
 			<NavigationMenu viewport={false}>
 				<NavigationMenuList className="flex">
 					<NavigationMenuItem>
@@ -75,6 +75,15 @@ export function Navbar() {
 					</NavigationMenuItem>
 
 					<NavigationMenuItem>
+						<NavigationMenuLink
+							asChild
+							className={navigationMenuTriggerStyle()}
+						>
+							<Link to="/trainings">Treinamentos</Link>
+						</NavigationMenuLink>
+					</NavigationMenuItem>
+
+					<NavigationMenuItem>
 						<NavigationMenuTrigger>Components</NavigationMenuTrigger>
 						<NavigationMenuContent>
 							<ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -89,14 +98,6 @@ export function Navbar() {
 								))}
 							</ul>
 						</NavigationMenuContent>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							asChild
-							className={navigationMenuTriggerStyle()}
-						>
-							<Link to="/docs">Docs</Link>
-						</NavigationMenuLink>
 					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<NavigationMenuTrigger>List</NavigationMenuTrigger>
@@ -125,51 +126,6 @@ export function Navbar() {
 											<div className="text-muted-foreground">
 												Read our latest blog posts.
 											</div>
-										</Link>
-									</NavigationMenuLink>
-								</li>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>Simple</NavigationMenuTrigger>
-						<NavigationMenuContent>
-							<ul className="grid w-[200px] gap-4">
-								<li>
-									<NavigationMenuLink asChild>
-										<Link to="#">Components</Link>
-									</NavigationMenuLink>
-									<NavigationMenuLink asChild>
-										<Link to="#">Documentation</Link>
-									</NavigationMenuLink>
-									<NavigationMenuLink asChild>
-										<Link to="#">Blocks</Link>
-									</NavigationMenuLink>
-								</li>
-							</ul>
-						</NavigationMenuContent>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
-						<NavigationMenuContent>
-							<ul className="grid w-[200px] gap-4">
-								<li>
-									<NavigationMenuLink asChild>
-										<Link to="#" className="flex-row items-center gap-2">
-											<Icon icon="fluent:chat-bubbles-question-16-regular" />
-											Backlog
-										</Link>
-									</NavigationMenuLink>
-									<NavigationMenuLink asChild>
-										<Link to="#" className="flex-row items-center gap-2">
-											<Icon icon="fluent:checkbox-unchecked-16-regular" />
-											To Do
-										</Link>
-									</NavigationMenuLink>
-									<NavigationMenuLink asChild>
-										<Link to="#" className="flex-row items-center gap-2">
-											<Icon icon="fluent:checkbox-checked-16-regular" />
-											Done
 										</Link>
 									</NavigationMenuLink>
 								</li>

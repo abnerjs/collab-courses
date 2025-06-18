@@ -8,6 +8,10 @@
 	body {
 		@apply bg-zinc-50 text-zinc-950 min-h-dvh min-w-dvw overflow-x-hidden overflow-y-auto flex flex-col scrollbar-hidden;
 	}
+
+	#root {
+		@apply flex-1 flex flex-col;
+	}
 }
 
 @utility scrollbar-hidden {

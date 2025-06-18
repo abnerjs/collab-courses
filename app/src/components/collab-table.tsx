@@ -7,16 +7,9 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -29,6 +22,13 @@ import {
 import { getCollabSummary } from "@/services/get-collab-summary";
 import { useEffect } from "react";
 import { Badge } from "./ui/badge";
+
+// type Pagination = {
+// 	total: number;
+// 	pageIndex: number;
+// 	pageSize: number;
+// 	pageCount: number;
+// };
 
 export function CollabTable() {
 	const { data, isLoading, isError } = useQuery({
@@ -102,7 +102,7 @@ export function CollabTable() {
 						</span>
 						<Badge
 							variant="secondary"
-							className="bg-red-600 text-white rounded-l-none"
+							className="bg-red-700 text-white rounded-l-none"
 						>
 							Necessário
 						</Badge>
@@ -130,7 +130,7 @@ export function CollabTable() {
 	}
 
 	return (
-		<div className="w-full px-8">
+		<div className="w-full px-8 flex-1 flex flex-col">
 			<div className="flex items-center py-4">
 				<Input
 					placeholder="Buscar por nome..."
@@ -145,34 +145,8 @@ export function CollabTable() {
 					}
 					className="max-w-sm"
 				/>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="ml-auto">
-							Columns <ChevronDown />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						{table
-							.getAllColumns()
-							.filter((column) => column.getCanHide())
-							.map((column) => {
-								return (
-									<DropdownMenuCheckboxItem
-										key={column.id}
-										className="capitalize"
-										checked={column.getIsVisible()}
-										onCheckedChange={(value) =>
-											column.toggleVisibility(!!value)
-										}
-									>
-										{column.id}
-									</DropdownMenuCheckboxItem>
-								);
-							})}
-					</DropdownMenuContent>
-				</DropdownMenu>
 			</div>
-			<div className="rounded-md border">
+			<div className="rounded-md border flex-1">
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (

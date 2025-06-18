@@ -14,6 +14,7 @@ import type {
 	Cargo,
 } from "@/services/get-trainings";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface MatrixProps {
 	data?: TrainingsResponse;
@@ -23,6 +24,10 @@ interface MatrixProps {
 
 export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 	const queryClient = useQueryClient();
+	const [columnCheckedState, setColumnCheckedState] = useState<
+		Record<string, boolean>
+	>({});
+
 	if (isLoading) {
 		return <div>Carregando...</div>;
 	}
@@ -30,6 +35,53 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 	if (isError || !data) {
 		return <div>Erro ao carregar os dados.</div>;
 	}
+
+	const areAllChecked = (trainingId: string) => {
+		return (
+			data?.cargos?.every((role) =>
+				role.treinamentos.some((t) => t.id === trainingId),
+			) ?? false
+		);
+	};
+
+	const handleHeaderCheckboxChange = async (
+		trainingId: string,
+		checked: boolean,
+	) => {
+		setColumnCheckedState((prevState) => ({
+			...prevState,
+			[trainingId]: checked,
+		}));
+
+		for (const role of data?.cargos || []) {
+			await changeTrainings(trainingId, role.id, checked);
+		}
+
+		queryClient.setQueryData(
+			["treinamentos"],
+			(oldData?: TrainingsResponse) => {
+				if (!oldData) return;
+
+				const updatedCargos = oldData.cargos.map((role) => ({
+					...role,
+					treinamentos: checked
+						? Array.from(new Set([...role.treinamentos, { id: trainingId }]))
+						: role.treinamentos.filter((t) => t.id !== trainingId),
+				}));
+
+				return {
+					...oldData,
+					cargos: [...updatedCargos], // Garante nova referência para disparar re-renderização
+				};
+			},
+		);
+
+		const updatedData = queryClient.getQueryData<TrainingsResponse>([
+			"treinamentos",
+		]);
+
+		data = updatedData || data;
+	};
 
 	const handleChangeStatus = async (
 		treinamentoId: string,
@@ -58,7 +110,17 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 							</TableHead>
 							{data.treinamentos?.map((training: Treinamento) => (
 								<TableHead key={training.id} className="whitespace-nowrap">
-									{training.nome}
+									{/* <Checkbox
+										className="mr-2"
+										defaultChecked={areAllChecked(training.id)}
+										onCheckedChange={(checked) =>
+											handleHeaderCheckboxChange(
+												training.id,
+												checked as boolean,
+											)
+										}
+									/> */}
+									<span>{training.nome}</span>
 								</TableHead>
 							))}
 						</TableRow>
@@ -69,7 +131,7 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 								<TableCell className="sticky left-0 bg-white z-10">
 									{role.descricao}
 								</TableCell>
-								{data.treinamentos.map((training: Treinamento) => {
+								{data?.treinamentos.map((training: Treinamento) => {
 									const status = role.treinamentos.some(
 										(t) => t.id === training.id,
 									);
@@ -77,7 +139,7 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 									return (
 										<TableCell key={training.id}>
 											<Checkbox
-												checked={status}
+												defaultChecked={status}
 												onCheckedChange={(_) =>
 													handleChangeStatus(training.id, role.id, !status)
 												}

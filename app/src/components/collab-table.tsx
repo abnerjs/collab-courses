@@ -123,7 +123,7 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 	}
 
 	return (
-		<div className="w-full px-8 flex-1 flex flex-col">
+		<div className="w-full px-8 mb-8 flex-1 flex flex-col">
 			<div className="flex items-center py-4">
 				<Input
 					placeholder="Buscar por nome..."
@@ -188,30 +188,6 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 						)}
 					</TableBody>
 				</Table>
-			</div>
-			<div className="flex items-center justify-end space-x-2 py-4">
-				<div className="text-muted-foreground flex-1 text-sm">
-					{table.getFilteredSelectedRowModel().rows.length} de{" "}
-					{table.getFilteredRowModel().rows.length} linha(s) selecionada(s).
-				</div>
-				<div className="space-x-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Anterior
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						próximo
-					</Button>
-				</div>
 			</div>
 		</div>
 	);

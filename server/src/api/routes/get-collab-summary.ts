@@ -2,7 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { searchCollaboratorsWithTrainingStatus } from "../../services/search-collaborators";
 
-export const getCollabSummary: FastifyPluginAsyncZod = async (app) => {
+export const getCollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
 		"/",
 		{

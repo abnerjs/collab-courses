@@ -36,8 +36,8 @@ export async function getTrainings() {
 			id: treinamento.id,
 			nome: treinamento.nome,
 		})
-		.from(treinamento)
-		.orderBy(treinamento.nome);
+		.from(treinamento);
+	// .orderBy(treinamento.nome);
 
 	return [result, treinamentos];
 }

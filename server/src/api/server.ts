@@ -5,8 +5,8 @@ import {
 	type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import fastifyCors from "@fastify/cors";
-import { getCollabSummaryRoute } from "./routes/get-collab-summary";
-import { getTrainingsRoute } from "./routes/get-trainings";
+import { CollabSummaryRoute } from "./routes/collab-summary";
+import { TrainingsRoute } from "./routes/trainings";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -17,8 +17,8 @@ app.register(fastifyCors, {
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
-app.register(getCollabSummaryRoute);
-app.register(getTrainingsRoute);
+app.register(CollabSummaryRoute);
+app.register(TrainingsRoute);
 
 app
 	.listen({

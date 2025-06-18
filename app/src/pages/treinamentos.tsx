@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function Treinamentos() {
 	const { data, isLoading, isError } = useQuery({
-		queryKey: ["colaboradores"],
+		queryKey: ["treinamentos"],
 		queryFn: getTrainings,
 	});
 

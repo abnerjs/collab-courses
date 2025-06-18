@@ -1,7 +1,6 @@
 export const getTrainings = async (): Promise<TrainingsResponse> => {
 	const response = await fetch("http://localhost:3000/trainings");
 	const data = await response.json();
-	console.log(data);
 	return data;
 };
 

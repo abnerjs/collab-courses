@@ -34,9 +34,6 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 						),
 						meta: z.object({
 							total: z.number().default(0),
-							pageIndex: z.number().default(0),
-							pageSize: z.number().default(10),
-							pageCount: z.number().default(0),
 						}),
 					}),
 				},

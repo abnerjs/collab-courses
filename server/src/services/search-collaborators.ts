@@ -24,8 +24,6 @@ export async function searchCollaboratorsWithTrainingStatus({
 	setorIds,
 	cargoIds,
 	statuses,
-	pageIndex,
-	pageSize,
 }: SearchCollaboratorsParams) {
 	const conditions = [];
 
@@ -55,10 +53,6 @@ export async function searchCollaboratorsWithTrainingStatus({
 	}
 
 	const where = conditions.length > 0 ? and(...conditions) : undefined;
-
-	const pageSizeParam = pageSize ?? 25;
-	const page = pageIndex ?? 0;
-	const offset = page * pageSize;
 
 	const data = await db
 		.select({
@@ -108,9 +102,12 @@ export async function searchCollaboratorsWithTrainingStatus({
 			),
 		)
 		.where(where)
-		.groupBy(colaborador.id, colaborador.nome, cargo.descricao, setor.descricao)
-		.limit(pageSizeParam)
-		.offset(offset);
+		.groupBy(
+			colaborador.id,
+			colaborador.nome,
+			cargo.descricao,
+			setor.descricao,
+		);
 
 	const total = await db
 		.select({ count: sql<number>`COUNT(DISTINCT ${colaborador.id})` })
@@ -122,15 +119,11 @@ export async function searchCollaboratorsWithTrainingStatus({
 		.where(where);
 
 	const totalRecords = Number(total[0]?.count ?? 0);
-	const totalPages = Math.ceil(totalRecords / pageSizeParam);
 
 	return {
 		data: data,
 		meta: {
 			total: totalRecords,
-			pageIndex: page,
-			pageSize: pageSizeParam,
-			pageCount: totalPages,
 		},
 	};
 }

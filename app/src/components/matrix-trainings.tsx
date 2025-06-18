@@ -48,42 +48,48 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 	};
 
 	return (
-		<div className="w-full px-8">
-			<Table className="pt-20">
-				<TableHeader>
-					<TableRow>
-						<TableHead>Cargo</TableHead>
-						{data.treinamentos?.map((training: Treinamento) => (
-							<TableHead key={training.id} className="text-xs">
-								{training.nome}
+		<div className="w-full px-8 flex flex-1">
+			<div className="overflow-auto max-h-[calc(100vh-89px)]">
+				<Table className="pt-20">
+					<TableHeader className="sticky top-0 bg-white z-10">
+						<TableRow>
+							<TableHead className="sticky left-0 bg-white z-20">
+								Cargo
 							</TableHead>
-						))}
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{data.cargos?.map((role: Cargo) => (
-						<TableRow key={role.id}>
-							<TableCell>{role.descricao}</TableCell>
-							{data.treinamentos.map((training: Treinamento) => {
-								const status = role.treinamentos.some(
-									(t) => t.id === training.id,
-								);
-
-								return (
-									<TableCell key={training.id}>
-										<Checkbox
-											defaultChecked={status}
-											onCheckedChange={(checked) =>
-												handleChangeStatus(training.id, role.id, !status)
-											}
-										/>
-									</TableCell>
-								);
-							})}
+							{data.treinamentos?.map((training: Treinamento) => (
+								<TableHead key={training.id} className="whitespace-nowrap">
+									{training.nome}
+								</TableHead>
+							))}
 						</TableRow>
-					))}
-				</TableBody>
-			</Table>
+					</TableHeader>
+					<TableBody>
+						{data.cargos?.map((role: Cargo) => (
+							<TableRow key={role.id}>
+								<TableCell className="sticky left-0 bg-white z-10">
+									{role.descricao}
+								</TableCell>
+								{data.treinamentos.map((training: Treinamento) => {
+									const status = role.treinamentos.some(
+										(t) => t.id === training.id,
+									);
+
+									return (
+										<TableCell key={training.id}>
+											<Checkbox
+												checked={status}
+												onCheckedChange={(_) =>
+													handleChangeStatus(training.id, role.id, !status)
+												}
+											/>
+										</TableCell>
+									);
+								})}
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
 		</div>
 	);
 }

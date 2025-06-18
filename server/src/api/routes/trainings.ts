@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { getTrainings } from "../../services/get-trainings";
 import { changeTraining } from "../../services/change-trainings";
+import { success } from "zod/v4";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -60,11 +61,11 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 			await changeTraining(treinamentoId, cargoId, status);
 
 			reply.status(200).send({
-				message: "Treinamento atualizado com sucesso",
+				success: true,
 			});
 
 			reply.status(400).send({
-				message: "Erro ao atualizar treinamento",
+				success: false,
 			});
 		},
 	);

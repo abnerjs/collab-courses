@@ -1,13 +1,18 @@
+import { MatrixTrainings } from "@/components/matrix-trainings";
 import { Navbar } from "@/components/navbar";
+import { getTrainings } from "@/services/get-trainings";
+import { useQuery } from "@tanstack/react-query";
 
 export function Treinamentos() {
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ["colaboradores"],
+		queryFn: getTrainings,
+	});
+
 	return (
 		<>
 			<Navbar />
-			<div className="flex flex-col items-center pt-24">
-				<h1 className="text-2xl font-bold mb-4">Treinamentos</h1>
-				<p className="text-gray-600">Página em construção...</p>
-			</div>
+			<MatrixTrainings data={data} isLoading={isLoading} isError={isError} />
 		</>
 	);
 }

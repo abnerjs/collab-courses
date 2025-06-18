@@ -7,7 +7,6 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,23 +18,17 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { getCollabSummary } from "@/services/get-collab-summary";
+import type { CollabSummaryResponse } from "@/services/get-collab-summary";
 import { useEffect } from "react";
 import { Badge } from "./ui/badge";
 
-// type Pagination = {
-// 	total: number;
-// 	pageIndex: number;
-// 	pageSize: number;
-// 	pageCount: number;
-// };
+interface CollabTableProps {
+	data?: CollabSummaryResponse;
+	isLoading?: boolean;
+	isError?: boolean;
+}
 
-export function CollabTable() {
-	const { data, isLoading, isError } = useQuery({
-		queryKey: ["colaboradores"],
-		queryFn: getCollabSummary,
-	});
-
+export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 	useEffect(() => {
 		console.log("Data fetched:", data);
 	}, [data]);

@@ -3,12 +3,10 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
-	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -109,7 +107,6 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 		data: data?.data || [],
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 	});
@@ -139,9 +136,9 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 					className="max-w-sm"
 				/>
 			</div>
-			<div className="rounded-md border flex-1">
-				<Table>
-					<TableHeader>
+			<div className="rounded-md border flex-1 overflow-auto flex max-h-[calc(100dvh-180px)]">
+				<Table className="pt-20 overflow-auto">
+					<TableHeader className="sticky top-0 bg-white z-10">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {

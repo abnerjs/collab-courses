@@ -2,16 +2,17 @@ import { DetailCollabTable } from "@/components/detail-collab-table";
 import { Navbar } from "@/components/navbar";
 import { Badge } from "@/components/ui/badge";
 import { getCollabDetails } from "@/services/detail-collab";
+import type { CollabDetailResponse } from "@/services/detail-collab";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 
 export const DetailCollab = () => {
 	const { id } = useParams<{ id: string }>();
-	const { data, isLoading, isError } = useQuery({
-		queryKey: ["colaboradores-detail"],
-		queryFn: id
-			? () => getCollabDetails(id)
-			: () => Promise.reject("ID is required"),
+	const { data, isLoading, isError } = useQuery<CollabDetailResponse, Error>({
+		queryKey: ["colaboradores-detail", id],
+		// biome-ignore lint/style/noNonNullAssertion: <explanation>
+		queryFn: () => getCollabDetails(id!),
+		enabled: !!id,
 	});
 
 	return (

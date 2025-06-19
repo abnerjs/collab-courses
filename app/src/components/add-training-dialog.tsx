@@ -14,7 +14,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useRef } from "react";
 import { Calendar } from "./ui/calendar";
 import { createTraining } from "@/services/create-trainings";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
@@ -33,6 +33,18 @@ export function AddTrainingDialogContent({
 	const [date, setDate] = React.useState<Date | undefined>(undefined);
 	const dialog = useRef(null);
 	const queryClient = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: createTraining,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["colaboradores-detail", collaboratorId],
+			});
+		},
+		onError: (error) => {
+			console.error("Erro na mutação:", error);
+		},
+	});
 
 	return (
 		<DialogContent ref={dialog} className="sm:max-w-[425px]">
@@ -84,17 +96,17 @@ export function AddTrainingDialogContent({
 				</DialogClose>
 				<DialogClose asChild>
 					<Button
-						onClick={async (e) => {
+						onClick={async () => {
+							// mutation.mutate({
+							// 	colaboradorId: collaboratorId,
+							// 	treinamentoId: trainingId,
+							// 	realizacao: date ? new Date(date) : new Date(),
+							// });
 							await createTraining({
 								colaboradorId: collaboratorId,
 								treinamentoId: trainingId,
 								realizacao: date ? new Date(date) : new Date(),
-							});
-							setDate(undefined);
-
-							queryClient.invalidateQueries({
-								queryKey: ["colaboradores-detail"],
-							});
+							}).finally(() => window.location.reload());
 						}}
 						type="submit"
 					>

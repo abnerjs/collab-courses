@@ -35,8 +35,6 @@ import type {
 	TreinamentoComplete,
 } from "@/services/detail-collab";
 import dayjs from "dayjs";
-import { PopoverTrigger } from "@radix-ui/react-popover";
-import { Popover } from "./ui/popover";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { AddTrainingDialogContent } from "./add-training-dialog";
 import { ConfirmDeleteTraining } from "./confirm-delete-training";
@@ -124,17 +122,13 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 				<DropdownMenuContent align="end" className="w-32">
 					<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 						<Dialog>
-							<form>
-								<DialogTrigger>Adicionar treinamento</DialogTrigger>
-								<AddTrainingDialogContent
-									collaboratorId={table?.options?.meta?.collaboratorId || ""}
-									collaboratorName={
-										table?.options?.meta?.collaboratorName || ""
-									}
-									trainingId={row.original.treinamentoId}
-									trainingDescription={row.original.nome}
-								/>
-							</form>
+							<DialogTrigger>Adicionar treinamento</DialogTrigger>
+							<AddTrainingDialogContent
+								collaboratorId={table?.options?.meta?.collaboratorId || ""}
+								collaboratorName={table?.options?.meta?.collaboratorName || ""}
+								trainingId={row.original.treinamentoId}
+								trainingDescription={row.original.nome}
+							/>
 						</Dialog>
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />

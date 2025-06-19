@@ -17,7 +17,6 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import type { CollabSummaryResponse } from "@/services/get-collab";
-import { useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Link } from "react-router";
@@ -30,10 +29,6 @@ interface CollabTableProps {
 }
 
 export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
-	useEffect(() => {
-		console.log("Data fetched:", data);
-	}, [data]);
-
 	const columns: ColumnDef<{
 		id: string;
 		nomeColaborador: string;

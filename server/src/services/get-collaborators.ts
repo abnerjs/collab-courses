@@ -8,6 +8,7 @@ import {
 	cargoTreinamento,
 	treinamento,
 } from "../db/schema";
+import dayjs from "dayjs";
 
 export async function getCollaboratorsById(id: string) {
 	const requiredTrainings = db.$with("required_trainings").as(
@@ -45,29 +46,26 @@ export async function getCollaboratorsById(id: string) {
 
 	const noPrazo = trainings.filter((t) => {
 		if (!t.realizacao) return false;
-		const validade = new Date(t.realizacao);
-		validade.setDate(validade.getDate() + t.validade);
-		return (
-			validade > new Date() &&
-			validade > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-		);
+		const validade = dayjs(t.realizacao).add(t.validade, "day");
+
+		return validade.isAfter(dayjs().add(30, "day").toDate());
 	});
 
 	const vencendo = trainings.filter((t) => {
 		if (!t.realizacao) return false;
-		const validade = new Date(t.realizacao);
-		validade.setDate(validade.getDate() + t.validade);
+		const validade = dayjs(t.realizacao).add(t.validade, "day");
+
 		return (
-			validade > new Date() &&
-			validade <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+			validade.isBefore(dayjs().add(30, "day").toDate()) &&
+			validade.isAfter(dayjs().toDate())
 		);
 	});
 
 	const vencido = trainings.filter((t) => {
 		if (!t.realizacao) return false;
-		const validade = new Date(t.realizacao);
-		validade.setDate(validade.getDate() + t.validade);
-		return validade < new Date();
+
+		const validade = dayjs(t.realizacao).add(t.validade, "day");
+		return validade.isBefore(dayjs().toDate());
 	});
 
 	const naoRealizado = trainings.filter((t) => !t.realizacao);

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getTrainings } from "../../services/get-trainings";
 import { changeTraining } from "../../services/change-trainings";
 import { success } from "zod/v4";
+import { createTraining } from "../../services/create-trainings";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -67,6 +68,39 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 			reply.status(400).send({
 				success: false,
 			});
+		},
+	);
+
+	app.post(
+		"/trainings/create",
+		{
+			schema: z.object({
+				body: z.object({
+					treinamentoId: z.string(),
+					colaboradorId: z.string(),
+					data: z.string().datetime(),
+				}),
+			}),
+		},
+		async (request, reply) => {
+			const { treinamentoId, colaboradorId, data } = request.body as {
+				treinamentoId: string;
+				colaboradorId: string;
+				data: string;
+			};
+
+			try {
+				await createTraining(treinamentoId, colaboradorId, new Date(data));
+				reply.status(200).send({ success: true });
+			} catch (error) {
+				reply.status(500).send({
+					success: false,
+					error:
+						error instanceof Error
+							? error.message
+							: "Erro ao criar treinamento",
+				});
+			}
 		},
 	);
 };

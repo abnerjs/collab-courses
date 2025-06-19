@@ -93,21 +93,9 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 
 			try {
 				await createTraining(treinamentoId, colaboradorId, realizacao);
-				const { collaborator, noPrazo, vencendo, vencido, naoRealizado } =
-					await getCollaboratorsById(colaboradorId);
 
 				return reply.status(200).send({
 					success: true,
-					data: {
-						id: (await collaborator).id,
-						nome: (await collaborator).nome,
-						cargo: (await collaborator).cargo,
-						setor: (await collaborator).setor,
-						noPrazo: noPrazo,
-						vencendo: vencendo,
-						vencido: vencido,
-						naoRealizado: naoRealizado,
-					},
 				});
 			} catch (error) {
 				reply.status(500).send({
@@ -145,9 +133,6 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 				lastValue: lastValue ?? false,
 			});
 
-			const { collaborator, noPrazo, vencendo, vencido, naoRealizado } =
-				await getCollaboratorsById(colaboradorId);
-
 			if (result.length === 0)
 				return reply
 					.status(404)
@@ -155,16 +140,6 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 
 			reply.status(200).send({
 				success: true,
-				data: {
-					id: (await collaborator).id,
-					nome: (await collaborator).nome,
-					cargo: (await collaborator).cargo,
-					setor: (await collaborator).setor,
-					noPrazo: noPrazo,
-					vencendo: vencendo,
-					vencido: vencido,
-					naoRealizado: naoRealizado,
-				},
 			});
 		},
 	);

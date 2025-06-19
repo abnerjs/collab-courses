@@ -21,7 +21,7 @@ export const DetailCollab = () => {
 			{isError && <p>Erro ao carregar detalhes do colaborador.</p>}
 			{data && (
 				<>
-					<div className="flex flex-col items gap-4 p-4">
+					<div className="flex flex-col items gap-4 p-4 px-6">
 						<h2 className="flex text-2xl font-bold items-center gap-2">
 							{data.nome}
 							<Badge variant="secondary">{data.setor}</Badge>

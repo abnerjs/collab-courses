@@ -51,7 +51,7 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 		cell: ({ row }) => {
 			return row.original.realizacao
 				? dayjs(row.original.realizacao).format("DD/MM/YYYY")
-				: "Não realizado";
+				: "";
 		},
 		enableHiding: false,
 	},
@@ -71,34 +71,34 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 				dayjs(row.original.realizacao).isAfter(
 					dayjs().add(row.original.validade, "day"),
 				) ? (
-					<Badge variant="outline" className="text-muted-foreground px-1.5">
+					<Badge variant="secondary" className="text-zinc-950 bg-red-200">
 						Vencido
 					</Badge>
 				) : dayjs(row.original.realizacao)
 						.add(30, "day")
 						.isAfter(dayjs().add(row.original.validade, "day")) ? (
-					<Badge variant="outline" className="text-muted-foreground px-1.5">
+					<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
 						Vencendo
 					</Badge>
 				) : (
-					<Badge variant="outline" className="text-muted-foreground px-1.5">
+					<Badge variant="secondary" className="text-zinc-950 bg-emerald-200">
 						No Prazo
 					</Badge>
 				)
 			) : (
-				<Badge variant="outline" className="text-muted-foreground px-1.5">
+				<Badge variant="secondary" className="text-zinc-950 bg-zinc-200">
 					Não realizado
 				</Badge>
 			),
 	},
 	{
 		id: "actions",
-		cell: () => (
+		cell: ({ row }) => (
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button
 						variant="secondary"
-						className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+						className="data-[state=open]:bg-muted text-muted-foreground flex size-8 ml-auto mr-4"
 						size="icon"
 					>
 						<Icon icon="fluent:more-vertical-16-regular" />
@@ -106,11 +106,11 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-32">
-					<DropdownMenuItem>Edit</DropdownMenuItem>
-					<DropdownMenuItem>Make a copy</DropdownMenuItem>
-					<DropdownMenuItem>Favorite</DropdownMenuItem>
+					<DropdownMenuItem>Adicionar treinamento</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+					<DropdownMenuItem variant="destructive">
+						Deletar último treinamento
+					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
 		),

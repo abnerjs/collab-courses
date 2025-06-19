@@ -78,19 +78,19 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 				body: z.object({
 					treinamentoId: z.string(),
 					colaboradorId: z.string(),
-					data: z.string().datetime(),
+					realizacao: z.string().datetime(),
 				}),
 			}),
 		},
 		async (request, reply) => {
-			const { treinamentoId, colaboradorId, data } = request.body as {
+			const { treinamentoId, colaboradorId, realizacao } = request.body as {
 				treinamentoId: string;
 				colaboradorId: string;
-				data: string;
+				realizacao: string;
 			};
 
 			try {
-				await createTraining(treinamentoId, colaboradorId, new Date(data));
+				await createTraining(treinamentoId, colaboradorId, realizacao);
 				reply.status(200).send({ success: true });
 			} catch (error) {
 				reply.status(500).send({

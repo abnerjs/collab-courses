@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 export async function createTraining(
 	treinamentoId: string,
 	colaboradorId: string,
-	data: Date,
+	realizacao: string,
 ) {
 	const result = db
 		.insert(treinamentoColaborador)
@@ -13,7 +13,7 @@ export async function createTraining(
 			{
 				treinamento: treinamentoId,
 				colaborador: colaboradorId,
-				realizacao: data,
+				realizacao: dayjs(realizacao).toDate(),
 			},
 		])
 		.returning();

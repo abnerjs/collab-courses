@@ -102,12 +102,8 @@ export async function searchCollaboratorsWithTrainingStatus({
 			),
 		)
 		.where(where)
-		.groupBy(
-			colaborador.id,
-			colaborador.nome,
-			cargo.descricao,
-			setor.descricao,
-		);
+		.groupBy(colaborador.id, colaborador.nome, cargo.descricao, setor.descricao)
+		.orderBy(colaborador.nome);
 
 	const total = await db
 		.select({ count: sql<number>`COUNT(DISTINCT ${colaborador.id})` })

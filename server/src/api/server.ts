@@ -8,6 +8,7 @@ import fastifyCors from "@fastify/cors";
 import { CollabSummaryRoute } from "./routes/collab-summary";
 import { TrainingsRoute } from "./routes/trainings";
 import { TestRoute } from "./routes/test";
+import { CollabRoute } from "./routes/collab";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -18,6 +19,7 @@ app.register(fastifyCors, {
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+app.register(CollabRoute);
 app.register(CollabSummaryRoute);
 app.register(TrainingsRoute);
 app.register(TestRoute);

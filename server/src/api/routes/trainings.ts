@@ -5,6 +5,7 @@ import { changeTraining } from "../../services/change-trainings";
 import { success } from "zod/v4";
 import { createTraining } from "../../services/create-trainings";
 import { deleteTrainings } from "../../services/delete-trainings";
+import { getCollaboratorsById } from "../../services/get-collaborators";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -92,7 +93,22 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 
 			try {
 				await createTraining(treinamentoId, colaboradorId, realizacao);
-				reply.status(200).send({ success: true });
+				const { collaborator, noPrazo, vencendo, vencido, naoRealizado } =
+					await getCollaboratorsById(colaboradorId);
+
+				return reply.status(200).send({
+					success: true,
+					data: {
+						id: (await collaborator).id,
+						nome: (await collaborator).nome,
+						cargo: (await collaborator).cargo,
+						setor: (await collaborator).setor,
+						noPrazo: noPrazo,
+						vencendo: vencendo,
+						vencido: vencido,
+						naoRealizado: naoRealizado,
+					},
+				});
 			} catch (error) {
 				reply.status(500).send({
 					success: false,
@@ -129,6 +145,9 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 				lastValue: lastValue ?? false,
 			});
 
+			const { collaborator, noPrazo, vencendo, vencido, naoRealizado } =
+				await getCollaboratorsById(colaboradorId);
+
 			if (result.length === 0)
 				return reply
 					.status(404)
@@ -136,7 +155,16 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 
 			reply.status(200).send({
 				success: true,
-				data: result,
+				data: {
+					id: (await collaborator).id,
+					nome: (await collaborator).nome,
+					cargo: (await collaborator).cargo,
+					setor: (await collaborator).setor,
+					noPrazo: noPrazo,
+					vencendo: vencendo,
+					vencido: vencido,
+					naoRealizado: naoRealizado,
+				},
 			});
 		},
 	);

@@ -1,6 +1,6 @@
 import { CollabTable } from "@/components/collab-table";
 import { Navbar } from "@/components/navbar";
-import { getCollabSummary } from "@/services/get-collab-summary";
+import { getCollabSummary } from "@/services/get-collab";
 import { useQuery } from "@tanstack/react-query";
 
 function Index() {

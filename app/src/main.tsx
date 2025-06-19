@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Index from "./pages/index.tsx";
 import { Treinamentos } from "./pages/treinamentos.tsx";
+import { DetailCollab } from "./pages/detail-collab.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
 	{
 		path: "/trainings",
 		Component: Treinamentos,
+	},
+	{
+		path: "/collaborators/:id",
+		Component: DetailCollab,
 	},
 ]);
 

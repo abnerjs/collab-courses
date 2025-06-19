@@ -16,9 +16,12 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import type { CollabSummaryResponse } from "@/services/get-collab-summary";
+import type { CollabSummaryResponse } from "@/services/get-collab";
 import { useEffect } from "react";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Link } from "react-router";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface CollabTableProps {
 	data?: CollabSummaryResponse;
@@ -57,7 +60,7 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 		},
 		{
 			id: "status",
-			header: "Status",
+			header: "Treinamentos",
 			cell: ({ row }) => (
 				<div className="flex items-center gap-2">
 					<Badge
@@ -101,6 +104,19 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 				</div>
 			),
 		},
+		{
+			id: "acoes",
+			header: "Ações",
+			cell: ({ row }) => (
+				<div className="flex items-center gap-2">
+					<Link to={`/collaborators/${row.original.id}`}>
+						<Button variant="secondary" size="sm">
+							<Icon icon="fluent:eye-16-regular" width={16} height={16} />
+						</Button>
+					</Link>
+				</div>
+			),
+		},
 	];
 
 	const table = useReactTable({
@@ -121,7 +137,8 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 
 	return (
 		<div className="w-full px-8 mb-8 flex-1 flex flex-col">
-			<div className="flex items-center py-4">
+			<div className="flex items-center py-4 gap-4">
+				<h1 className="text-2xl font-semibold">Colaboradores</h1>
 				<Input
 					placeholder="Buscar por nome..."
 					value={

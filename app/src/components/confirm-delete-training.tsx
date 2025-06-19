@@ -44,7 +44,7 @@ export function ConfirmDeleteTraining({
 				<DialogClose asChild>
 					<Button variant="outline">Cancelar</Button>
 				</DialogClose>
-				<DialogClose>
+				<DialogClose asChild>
 					<Button
 						onClick={async (e) => {
 							await deleteTraining({

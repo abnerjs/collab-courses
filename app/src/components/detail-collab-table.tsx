@@ -39,7 +39,7 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 import { Popover } from "./ui/popover";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { AddTrainingDialogContent } from "./add-training-dialog";
-import { createTraining } from "@/services/create-trainings";
+import { ConfirmDeleteTraining } from "./confirm-delete-training";
 
 const columns: ColumnDef<TreinamentoComplete>[] = [
 	{
@@ -61,6 +61,17 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 		enableHiding: false,
 	},
 	{
+		accessorKey: "nextRealizacao",
+		header: "Vencimento",
+		cell: ({ row }) => {
+			return row.original.realizacao
+				? dayjs(row.original.realizacao)
+						.add(row.original.validade, "day")
+						.format("DD/MM/YYYY")
+				: "";
+		},
+	},
+	{
 		accessorKey: "validade",
 		header: "Validade (dias)",
 		cell: ({ row }) => {
@@ -73,21 +84,21 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 		header: "Status",
 		cell: ({ row }) =>
 			row.original.realizacao ? (
-				dayjs(row.original.realizacao).isAfter(
-					dayjs().add(row.original.validade, "day"),
-				) ? (
+				dayjs(row.original.realizacao)
+					.add(row.original.validade, "day")
+					.isAfter(dayjs()) ? (
+					dayjs(row.original.realizacao).add(30, "day").isAfter(dayjs()) ? (
+						<Badge variant="secondary" className="text-zinc-950 bg-emerald-200">
+							No prazo
+						</Badge>
+					) : (
+						<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
+							Vencendo
+						</Badge>
+					)
+				) : (
 					<Badge variant="secondary" className="text-zinc-950 bg-red-200">
 						Vencido
-					</Badge>
-				) : dayjs(row.original.realizacao)
-						.add(30, "day")
-						.isAfter(dayjs().add(row.original.validade, "day")) ? (
-					<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
-						Vencendo
-					</Badge>
-				) : (
-					<Badge variant="secondary" className="text-zinc-950 bg-emerald-200">
-						No Prazo
 					</Badge>
 				)
 			) : (
@@ -127,10 +138,34 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 						</Dialog>
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem variant="destructive">
-						<Popover>
-							<PopoverTrigger>Deletar último treinamento</PopoverTrigger>
-						</Popover>
+					<DropdownMenuItem
+						variant="destructive"
+						onSelect={(e) => e.preventDefault()}
+					>
+						<Dialog>
+							<DialogTrigger>Apagar último treinamento</DialogTrigger>
+							<ConfirmDeleteTraining
+								collaboratorId={table?.options?.meta?.collaboratorId || ""}
+								trainingId={row.original.treinamentoId}
+								collaboratorName={table?.options?.meta?.collaboratorName || ""}
+								trainingDescription={row.original.nome}
+							/>
+						</Dialog>
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						variant="destructive"
+						onSelect={(e) => e.preventDefault()}
+					>
+						<Dialog>
+							<DialogTrigger>Apagar todos deste treinamento</DialogTrigger>
+							<ConfirmDeleteTraining
+								collaboratorId={table?.options?.meta?.collaboratorId || ""}
+								trainingId={row.original.treinamentoId}
+								collaboratorName={table?.options?.meta?.collaboratorName || ""}
+								trainingDescription={row.original.nome}
+								allTrainings
+							/>
+						</Dialog>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

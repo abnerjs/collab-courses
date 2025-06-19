@@ -1,15 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
 	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import dayjs from "dayjs";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -17,7 +14,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useRef } from "react";
 import { Calendar } from "./ui/calendar";
 import { createTraining } from "@/services/create-trainings";
-import { set } from "date-fns";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
@@ -35,6 +32,8 @@ export function AddTrainingDialogContent({
 	const [open, setOpen] = React.useState(false);
 	const [date, setDate] = React.useState<Date | undefined>(undefined);
 	const dialog = useRef(null);
+	const queryClient = useQueryClient();
+
 	return (
 		<DialogContent ref={dialog} className="sm:max-w-[425px]">
 			<DialogHeader>
@@ -83,20 +82,25 @@ export function AddTrainingDialogContent({
 				<DialogClose asChild>
 					<Button variant="outline">Cancelar</Button>
 				</DialogClose>
-				<Button
-					onClick={async (e) => {
-						e.preventDefault();
-						await createTraining({
-							colaboradorId: collaboratorId,
-							treinamentoId: trainingId,
-							realizacao: date ? new Date(date) : new Date(),
-						});
-						setDate(undefined);
-					}}
-					type="submit"
-				>
-					Confirmar treinamento
-				</Button>
+				<DialogClose>
+					<Button
+						onClick={async (e) => {
+							await createTraining({
+								colaboradorId: collaboratorId,
+								treinamentoId: trainingId,
+								realizacao: date ? new Date(date) : new Date(),
+							});
+							setDate(undefined);
+
+							queryClient.invalidateQueries({
+								queryKey: ["colaboradores-detail"],
+							});
+						}}
+						type="submit"
+					>
+						Confirmar treinamento
+					</Button>
+				</DialogClose>
 			</DialogFooter>
 		</DialogContent>
 	);

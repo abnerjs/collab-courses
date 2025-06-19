@@ -4,6 +4,7 @@ import { getTrainings } from "../../services/get-trainings";
 import { changeTraining } from "../../services/change-trainings";
 import { success } from "zod/v4";
 import { createTraining } from "../../services/create-trainings";
+import { deleteTrainings } from "../../services/delete-trainings";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -101,6 +102,42 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 							: "Erro ao criar treinamento",
 				});
 			}
+		},
+	);
+
+	app.delete(
+		"/trainings/delete",
+		{
+			schema: z.object({
+				body: z.object({
+					colaboradorId: z.string(),
+					treinamentoId: z.string(),
+					lastValue: z.boolean().optional().default(false),
+				}),
+			}),
+		},
+		async (request, reply) => {
+			const { colaboradorId, treinamentoId, lastValue } = request.body as {
+				colaboradorId: string;
+				treinamentoId: string;
+				lastValue?: boolean;
+			};
+
+			const result = await deleteTrainings({
+				colaboradorId,
+				treinamentoId,
+				lastValue: lastValue ?? false,
+			});
+
+			if (result.length === 0)
+				return reply
+					.status(404)
+					.send({ success: false, error: "Registro não encontrado" });
+
+			reply.status(200).send({
+				success: true,
+				data: result,
+			});
 		},
 	);
 };

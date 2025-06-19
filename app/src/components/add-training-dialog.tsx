@@ -12,6 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import dayjs from "dayjs";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import React, { useRef } from "react";
+import { Calendar } from "./ui/calendar";
+import { createTraining } from "@/services/create-trainings";
+import { set } from "date-fns";
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
@@ -26,29 +32,71 @@ export function AddTrainingDialogContent({
 	trainingId,
 	trainingDescription,
 }: AddTrainingDialogProps) {
+	const [open, setOpen] = React.useState(false);
+	const [date, setDate] = React.useState<Date | undefined>(undefined);
+	const dialog = useRef(null);
 	return (
-		<DialogContent className="sm:max-w-[425px]">
+		<DialogContent ref={dialog} className="sm:max-w-[425px]">
 			<DialogHeader>
 				<DialogTitle>Registro de treinamento</DialogTitle>
 				<DialogDescription>
-					Adicionando novo treinamento para {collaboratorName || "colaborador"}:
+					Marcar treinamento de {trainingDescription} para{" "}
+					{collaboratorName || "colaborador"}
 				</DialogDescription>
 			</DialogHeader>
 			<div className="grid gap-4">
 				<div className="grid gap-3">
-					<Label htmlFor="realizacao">Realização</Label>
-					<Input
-						id="realizacao"
-						name="name"
-						defaultValue={dayjs().format("YYYY-MM-DD")}
-					/>
+					<Label htmlFor="date" className="px-1">
+						Realização
+					</Label>
+					<Popover open={open} onOpenChange={setOpen} modal={true}>
+						<PopoverTrigger asChild>
+							<Button
+								variant="outline"
+								id="date"
+								className="w-48 justify-between font-normal"
+							>
+								{date ? date.toLocaleDateString() : "Selecione uma data"}
+								<Icon icon="fluent:chevron-down-16-regular" />
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent
+							className="w-auto overflow-hidden p-0"
+							align="start"
+						>
+							<Calendar
+								mode="single"
+								selected={date}
+								captionLayout="dropdown"
+								startMonth={dayjs().subtract(3, "year").toDate()}
+								endMonth={dayjs().add(3, "year").toDate()}
+								onSelect={(date) => {
+									setDate(date);
+									setOpen(false);
+								}}
+							/>
+						</PopoverContent>
+					</Popover>
 				</div>
 			</div>
 			<DialogFooter>
 				<DialogClose asChild>
 					<Button variant="outline">Cancelar</Button>
 				</DialogClose>
-				<Button type="submit">Confirmar treinamento</Button>
+				<Button
+					onClick={async (e) => {
+						e.preventDefault();
+						await createTraining({
+							colaboradorId: collaboratorId,
+							treinamentoId: trainingId,
+							realizacao: date ? new Date(date) : new Date(),
+						});
+						setDate(undefined);
+					}}
+					type="submit"
+				>
+					Confirmar treinamento
+				</Button>
 			</DialogFooter>
 		</DialogContent>
 	);

@@ -39,6 +39,7 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 import { Popover } from "./ui/popover";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { AddTrainingDialogContent } from "./add-training-dialog";
+import { createTraining } from "@/services/create-trainings";
 
 const columns: ColumnDef<TreinamentoComplete>[] = [
 	{
@@ -110,7 +111,7 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-32">
-					<DropdownMenuItem>
+					<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 						<Dialog>
 							<form>
 								<DialogTrigger>Adicionar treinamento</DialogTrigger>

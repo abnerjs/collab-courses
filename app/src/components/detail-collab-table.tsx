@@ -35,6 +35,10 @@ import type {
 	TreinamentoComplete,
 } from "@/services/detail-collab";
 import dayjs from "dayjs";
+import { PopoverTrigger } from "@radix-ui/react-popover";
+import { Popover } from "./ui/popover";
+import { Dialog, DialogTrigger } from "./ui/dialog";
+import { AddTrainingDialogContent } from "./add-training-dialog";
 
 const columns: ColumnDef<TreinamentoComplete>[] = [
 	{
@@ -93,7 +97,7 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 	},
 	{
 		id: "actions",
-		cell: ({ row }) => (
+		cell: ({ row, table }) => (
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button
@@ -106,10 +110,26 @@ const columns: ColumnDef<TreinamentoComplete>[] = [
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-32">
-					<DropdownMenuItem>Adicionar treinamento</DropdownMenuItem>
+					<DropdownMenuItem>
+						<Dialog>
+							<form>
+								<DialogTrigger>Adicionar treinamento</DialogTrigger>
+								<AddTrainingDialogContent
+									collaboratorId={table?.options?.meta?.collaboratorId || ""}
+									collaboratorName={
+										table?.options?.meta?.collaboratorName || ""
+									}
+									trainingId={row.original.treinamentoId}
+									trainingDescription={row.original.nome}
+								/>
+							</form>
+						</Dialog>
+					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem variant="destructive">
-						Deletar último treinamento
+						<Popover>
+							<PopoverTrigger>Deletar último treinamento</PopoverTrigger>
+						</Popover>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
@@ -181,6 +201,9 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 		[],
 	);
 
+	const collaboratorId = data.id;
+	const collaboratorName = data.nome;
+
 	const createTable = (data: TreinamentoComplete[]) => {
 		return useReactTable({
 			data,
@@ -196,6 +219,10 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 			getFilteredRowModel: getFilteredRowModel(),
 			getFacetedRowModel: getFacetedRowModel(),
 			getFacetedUniqueValues: getFacetedUniqueValues(),
+			meta: {
+				collaboratorId,
+				collaboratorName,
+			},
 		});
 	};
 
@@ -203,12 +230,18 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 	const tableVencido = createTable(data.vencido);
 	const tableVencendo = createTable(data.vencendo);
 	const tableNaoRealizado = createTable(data.naoRealizado);
-	const tableTodos = createTable([
-		...data.noPrazo,
-		...data.vencido,
-		...data.vencendo,
-		...data.naoRealizado,
-	]);
+	const tableTodos = createTable(
+		[
+			...data.noPrazo,
+			...data.vencido,
+			...data.vencendo,
+			...data.naoRealizado,
+		].sort((a, b) => {
+			if (a.nome < b.nome) return -1;
+			if (a.nome > b.nome) return 1;
+			return 0;
+		}),
+	);
 
 	return (
 		<Tabs
@@ -276,4 +309,13 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 			</TabsContent>
 		</Tabs>
 	);
+}
+
+type CustomTableMeta = {
+	collaboratorId: string;
+	collaboratorName: string;
+};
+
+declare module "@tanstack/react-table" {
+	interface TableMeta<TData> extends CustomTableMeta {}
 }

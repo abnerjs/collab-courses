@@ -1,9 +1,11 @@
+import { env } from "@/env";
+
 export const changeTrainings = async (
 	treinamentoId: string,
 	cargoId: string,
 	status: boolean,
 ): Promise<{ success: boolean }> => {
-	const response = await fetch(`${process.env.API_URL}/trainings/change`, {
+	const response = await fetch(`${env.VITE_API_URL}/trainings/change`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

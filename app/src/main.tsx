@@ -13,7 +13,7 @@ const router = createBrowserRouter([
 		Component: Index,
 	},
 	{
-		path: "/trainings",
+		path: "/matrix_trainings",
 		Component: Treinamentos,
 	},
 	{

@@ -1,10 +1,12 @@
+import { env } from "@/env";
+
 export const createTraining = async (training: {
 	treinamentoId: string;
 	colaboradorId: string;
 	realizacao: Date;
 }): Promise<{ success: boolean }> => {
 	try {
-		const response = await fetch(`${process.env.API_URL}/trainings/create`, {
+		const response = await fetch(`${env.VITE_API_URL}/trainings/create`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

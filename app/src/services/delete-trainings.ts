@@ -1,10 +1,12 @@
+import { env } from "@/env";
+
 export const deleteTraining = async (training: {
 	treinamentoId: string;
 	colaboradorId: string;
 	lastValue?: boolean;
 }): Promise<{ success: boolean }> => {
 	try {
-		const response = await fetch(`${process.env.API_URL}/trainings/delete`, {
+		const response = await fetch(`${env.VITE_API_URL}/trainings/delete`, {
 			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json",

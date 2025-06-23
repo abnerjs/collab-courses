@@ -1,5 +1,7 @@
+import { env } from "@/env";
+
 export const getCollabSummary = async (): Promise<CollabSummaryResponse> => {
-	const response = await fetch(`${process.env.API_URL}/`);
+	const response = await fetch(`${env.VITE_API_URL}/`);
 	const data = await response.json();
 	return data;
 };

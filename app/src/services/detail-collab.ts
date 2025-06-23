@@ -1,7 +1,7 @@
 export const getCollabDetails = async (
 	id: string,
 ): Promise<CollabDetailResponse> => {
-	const response = await fetch(`http://localhost:3000/collaborators/${id}`);
+	const response = await fetch(`${process.env.API_URL}/collaborators/${id}`);
 	const data = await response.json();
 	return data;
 };

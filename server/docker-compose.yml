@@ -6,6 +6,6 @@ services:
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_USER=docker
+      - POSTGRES_USER=docker5290999fe3378a44fcc2f22fa0fbdfa5fec43ab7
       - POSTGRES_PASSWORD=docker
       - POSTGRES_DB=collab-courses

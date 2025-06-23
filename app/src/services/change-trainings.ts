@@ -3,7 +3,7 @@ export const changeTrainings = async (
 	cargoId: string,
 	status: boolean,
 ): Promise<{ success: boolean }> => {
-	const response = await fetch("http://localhost:3000/trainings/change", {
+	const response = await fetch(`${process.env.API_URL}/trainings/change`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

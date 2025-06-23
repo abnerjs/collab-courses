@@ -4,7 +4,7 @@ export const createTraining = async (training: {
 	realizacao: Date;
 }): Promise<{ success: boolean }> => {
 	try {
-		const response = await fetch("http://localhost:3000/trainings/create", {
+		const response = await fetch(`${process.env.API_URL}/trainings/create`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

@@ -1,5 +1,5 @@
 export const getTrainings = async (): Promise<TrainingsResponse> => {
-	const response = await fetch("http://localhost:3000/trainings");
+	const response = await fetch(`${process.env.API_URL}/trainings`);
 	const data = await response.json();
 	return data;
 };

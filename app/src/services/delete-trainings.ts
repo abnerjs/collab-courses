@@ -4,7 +4,7 @@ export const deleteTraining = async (training: {
 	lastValue?: boolean;
 }): Promise<{ success: boolean }> => {
 	try {
-		const response = await fetch("http://localhost:3000/trainings/delete", {
+		const response = await fetch(`${process.env.API_URL}/trainings/delete`, {
 			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json",

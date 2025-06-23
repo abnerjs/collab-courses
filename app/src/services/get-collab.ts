@@ -1,5 +1,5 @@
 export const getCollabSummary = async (): Promise<CollabSummaryResponse> => {
-	const response = await fetch("http://localhost:3000/");
+	const response = await fetch(`${process.env.API_URL}/`);
 	const data = await response.json();
 	return data;
 };

@@ -9,6 +9,7 @@ import { CollabSummaryRoute } from "./routes/collab-summary";
 import { TrainingsRoute } from "./routes/trainings";
 import { TestRoute } from "./routes/test";
 import { CollabRoute } from "./routes/collab";
+import syncRoutes from "./routes/sync";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -24,6 +25,7 @@ app.register(CollabRoute);
 app.register(CollabSummaryRoute);
 app.register(TrainingsRoute);
 app.register(TestRoute);
+app.register(syncRoutes);
 
 app
 	.listen({

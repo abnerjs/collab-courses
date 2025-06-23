@@ -6,6 +6,9 @@ export const setor = pgTable("setor", {
 		.primaryKey()
 		.$defaultFn(() => createId()),
 	descricao: text("descricao").notNull(),
+	updatedAt: timestamp("updatedAt", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
 });
 
 export const cargo = pgTable("cargo", {
@@ -19,6 +22,9 @@ export const cargo = pgTable("cargo", {
 			onDelete: "cascade",
 			onUpdate: "cascade",
 		}),
+	updatedAt: timestamp("updatedAt", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
 });
 
 export const colaborador = pgTable("colaborador", {
@@ -32,6 +38,9 @@ export const colaborador = pgTable("colaborador", {
 	createdAt: timestamp("createdAt", { withTimezone: true })
 		.notNull()
 		.defaultNow(),
+	updatedAt: timestamp("updatedAt", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
 });
 
 export const treinamento = pgTable("treinamento", {
@@ -40,6 +49,9 @@ export const treinamento = pgTable("treinamento", {
 		.$defaultFn(() => createId()),
 	nome: text("nome").notNull(),
 	validade: integer("validade").notNull(),
+	updatedAt: timestamp("updatedAt", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
 });
 
 export const cargoTreinamento = pgTable("cargoTreinamento", {
@@ -58,6 +70,9 @@ export const cargoTreinamento = pgTable("cargoTreinamento", {
 			onDelete: "cascade",
 			onUpdate: "cascade",
 		}),
+	updatedAt: timestamp("updatedAt", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
 });
 
 export const treinamentoColaborador = pgTable("treinamentoColaborador", {
@@ -77,4 +92,7 @@ export const treinamentoColaborador = pgTable("treinamentoColaborador", {
 			onUpdate: "cascade",
 		}),
 	realizacao: timestamp("realizacao", { withTimezone: true }).notNull(),
+	updatedAt: timestamp("updatedAt", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
 });

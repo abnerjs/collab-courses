@@ -10,6 +10,8 @@ import {
 import { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteTraining } from "@/services/delete-trainings";
+import { addToQueue } from "@/lib/mutation-queue";
+import { createId } from "@paralleldrive/cuid2";
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
@@ -17,6 +19,17 @@ interface AddTrainingDialogProps {
 	trainingId: string;
 	trainingDescription?: string;
 	allTrainings?: boolean;
+}
+
+interface Treinamento {
+	id: string;
+	colaboradorId: string;
+	// ...outros campos se necessário
+}
+
+interface ColaboradorDetailCache {
+	treinamentos: Treinamento[];
+	// ...outros campos se necessário
 }
 
 export function ConfirmDeleteTraining({
@@ -31,6 +44,46 @@ export function ConfirmDeleteTraining({
 
 	const mutation = useMutation({
 		mutationFn: deleteTraining,
+		onMutate: async (variables) => {
+			await queryClient.cancelQueries({
+				queryKey: ["colaboradores-detail", collaboratorId],
+			});
+			const previousData = queryClient.getQueryData<ColaboradorDetailCache>([
+				"colaboradores-detail",
+				collaboratorId,
+			]);
+			if (previousData && Array.isArray(previousData.treinamentos)) {
+				const newData: ColaboradorDetailCache = {
+					...previousData,
+					treinamentos: previousData.treinamentos.filter(
+						(t) =>
+							t.id !== variables.treinamentoId ||
+							t.colaboradorId !== variables.colaboradorId,
+					),
+				};
+				queryClient.setQueryData(
+					["colaboradores-detail", collaboratorId],
+					newData,
+				);
+			}
+			return { previousData };
+		},
+		onError: async (error, variables, context) => {
+			if (context?.previousData) {
+				queryClient.setQueryData(
+					["colaboradores-detail", collaboratorId],
+					context.previousData,
+				);
+			}
+			await addToQueue({
+				id: createId(),
+				table: "treinamentoColaborador",
+				operation: "delete",
+				data: variables,
+				createdAt: Date.now(),
+			});
+			console.error("Erro na mutação, salva na fila offline:", error);
+		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: ["colaboradores-detail", collaboratorId],
@@ -55,19 +108,11 @@ export function ConfirmDeleteTraining({
 				</DialogClose>
 				<DialogClose asChild>
 					<Button
-						onClick={async () => {
-							// mutation.mutate({
-							// 	treinamentoId: trainingId,
-							// 	colaboradorId: collaboratorId,
-							// 	lastValue: !allTrainings,
-							// });
-
-							await deleteTraining({
+						onClick={() => {
+							mutation.mutate({
 								treinamentoId: trainingId,
 								colaboradorId: collaboratorId,
 								lastValue: !allTrainings,
-							}).then(() => {
-								window.location.reload();
 							});
 						}}
 						type="submit"

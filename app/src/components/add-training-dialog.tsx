@@ -15,12 +15,23 @@ import React, { useRef } from "react";
 import { Calendar } from "./ui/calendar";
 import { createTraining } from "@/services/create-trainings";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addToQueue } from "@/lib/mutation-queue";
+import { createId } from "@paralleldrive/cuid2";
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
 	collaboratorName?: string;
 	trainingId: string;
 	trainingDescription?: string;
+}
+
+interface ColaboradorDetailCache {
+	id: string;
+	treinamentos: Array<{
+		id: string;
+		colaboradorId: string;
+		// Add other necessary fields here
+	}>;
 }
 
 export function AddTrainingDialogContent({
@@ -36,13 +47,53 @@ export function AddTrainingDialogContent({
 
 	const mutation = useMutation({
 		mutationFn: createTraining,
+		onMutate: async (variables) => {
+			await queryClient.cancelQueries({
+				queryKey: ["colaboradores-detail", collaboratorId],
+			});
+			const previousData = queryClient.getQueryData<ColaboradorDetailCache>([
+				"colaboradores-detail",
+				collaboratorId,
+			]);
+			if (previousData && Array.isArray(previousData.treinamentos)) {
+				const newData: ColaboradorDetailCache = {
+					...previousData,
+					treinamentos: [
+						...previousData.treinamentos,
+						{
+							id: variables.treinamentoId,
+							colaboradorId: variables.colaboradorId,
+							// ...adicione outros campos necessários
+						},
+					],
+				};
+				queryClient.setQueryData(
+					["colaboradores-detail", collaboratorId],
+					newData,
+				);
+			}
+			return { previousData };
+		},
+		onError: async (error, variables, context) => {
+			if (context?.previousData) {
+				queryClient.setQueryData(
+					["colaboradores-detail", collaboratorId],
+					context.previousData,
+				);
+			}
+			await addToQueue({
+				id: createId(),
+				table: "treinamentoColaborador",
+				operation: "create",
+				data: variables,
+				createdAt: Date.now(),
+			});
+			console.error("Erro na mutação, salva na fila offline:", error);
+		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: ["colaboradores-detail", collaboratorId],
 			});
-		},
-		onError: (error) => {
-			console.error("Erro na mutação:", error);
 		},
 	});
 
@@ -96,17 +147,12 @@ export function AddTrainingDialogContent({
 				</DialogClose>
 				<DialogClose asChild>
 					<Button
-						onClick={async () => {
-							// mutation.mutate({
-							// 	colaboradorId: collaboratorId,
-							// 	treinamentoId: trainingId,
-							// 	realizacao: date ? new Date(date) : new Date(),
-							// });
-							await createTraining({
+						onClick={() => {
+							mutation.mutate({
 								colaboradorId: collaboratorId,
 								treinamentoId: trainingId,
 								realizacao: date ? new Date(date) : new Date(),
-							}).finally(() => window.location.reload());
+							});
 						}}
 						type="submit"
 					>

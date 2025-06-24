@@ -16,24 +16,14 @@ import type {
 import { useQueryClient } from "@tanstack/react-query";
 
 interface MatrixProps {
-	data?: TrainingsResponse;
-	isLoading?: boolean;
-	isError?: boolean;
+	data: TrainingsResponse;
 }
 
-export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
+export function MatrixTrainings({ data }: MatrixProps) {
 	const queryClient = useQueryClient();
 	// const [columnCheckedState, setColumnCheckedState] = useState<
 	// 	Record<string, boolean>
 	// >({});
-
-	if (isLoading) {
-		return <div>Carregando...</div>;
-	}
-
-	if (isError || !data) {
-		return <div>Erro ao carregar os dados.</div>;
-	}
 
 	// const areAllChecked = (trainingId: string) => {
 	// 	return (
@@ -57,7 +47,7 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 	// 	}
 
 	// 	queryClient.setQueryData(
-	// 		["treinamentos"],
+	// 		["matriz-treinamentos"],
 	// 		(oldData?: TrainingsResponse) => {
 	// 			if (!oldData) return;
 
@@ -76,7 +66,7 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 	// 	);
 
 	// 	const updatedData = queryClient.getQueryData<TrainingsResponse>([
-	// 		"treinamentos",
+	// 		"matriz-treinamentos",
 	// 	]);
 
 	// 	data = updatedData || data;
@@ -90,7 +80,7 @@ export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
 		const response = await changeTrainings(treinamentoId, cargoId, status);
 		if (!response.success) {
 			queryClient.setQueryData(
-				["treinamentos"],
+				["matriz-treinamentos"],
 				(oldData?: TrainingsResponse) => {
 					if (oldData) return oldData;
 				},

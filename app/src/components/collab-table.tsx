@@ -19,16 +19,14 @@ import {
 import type { CollabSummaryResponse } from "@/services/get-collab";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Link } from "react-router";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Link } from "@tanstack/react-router";
 
 interface CollabTableProps {
 	data?: CollabSummaryResponse;
-	isLoading?: boolean;
-	isError?: boolean;
 }
 
-export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
+export function CollabTable({ data }: CollabTableProps) {
 	const columns: ColumnDef<{
 		id: string;
 		nomeColaborador: string;
@@ -104,7 +102,7 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 			header: "Ações",
 			cell: ({ row }) => (
 				<div className="flex items-center gap-2">
-					<Link to={`/collaborators/${row.original.id}`}>
+					<Link to="/detail-collab/$id" params={{ id: row.original.id }}>
 						<Button variant="secondary" size="sm">
 							<Icon icon="fluent:eye-16-regular" width={16} height={16} />
 						</Button>
@@ -121,14 +119,6 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 	});
-
-	if (isLoading) {
-		return <div>Carregando...</div>;
-	}
-
-	if (isError) {
-		return <div>Erro ao carregar os dados.</div>;
-	}
 
 	return (
 		<div className="w-full px-8 mb-8 flex-1 flex flex-col">

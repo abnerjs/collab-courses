@@ -8,7 +8,6 @@ import { createIDBPersister } from "./lib/query-idb-persister";
 import Index from "./pages/index.tsx";
 import { Treinamentos } from "./pages/treinamentos.tsx";
 import { DetailCollab } from "./pages/detail-collab.tsx";
-import { SyncManager } from "@/components/SyncManager";
 
 const router = createBrowserRouter([
 	{
@@ -51,7 +50,6 @@ const queryClient = new QueryClient({
 	createRoot(root).render(
 		<StrictMode>
 			<QueryClientProvider client={queryClient}>
-				<SyncManager />
 				<RouterProvider router={router} />
 			</QueryClientProvider>
 		</StrictMode>,

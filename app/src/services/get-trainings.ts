@@ -1,8 +1,14 @@
 import { env } from "@/env";
+import { idbGet, idbSet } from "@/lib/query-idb-persister";
 
 export const getTrainings = async (): Promise<TrainingsResponse> => {
+	const cacheKey = "trainings";
+	const cached = await idbGet<TrainingsResponse>(cacheKey);
+	if (cached) return cached;
+
 	const response = await fetch(`${env.VITE_API_URL}/trainings`);
 	const data = await response.json();
+	await idbSet(cacheKey, data);
 	return data;
 };
 

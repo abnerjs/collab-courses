@@ -1,8 +1,14 @@
 import { env } from "@/env";
+import { idbGet, idbSet } from "@/lib/query-idb-persister";
 
 export const getCollabSummary = async (): Promise<CollabSummaryResponse> => {
+	const cacheKey = "collab-summary";
+	const cached = await idbGet<CollabSummaryResponse>(cacheKey);
+	if (cached) return cached;
+
 	const response = await fetch(`${env.VITE_API_URL}/`);
 	const data = await response.json();
+	await idbSet(cacheKey, data);
 	return data;
 };
 

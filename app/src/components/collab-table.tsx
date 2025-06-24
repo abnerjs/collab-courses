@@ -24,11 +24,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface CollabTableProps {
 	data?: CollabSummaryResponse;
-	isLoading?: boolean;
-	isError?: boolean;
 }
 
-export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
+export function CollabTable({ data }: CollabTableProps) {
 	const columns: ColumnDef<{
 		id: string;
 		nomeColaborador: string;
@@ -121,14 +119,6 @@ export function CollabTable({ data, isLoading, isError }: CollabTableProps) {
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 	});
-
-	if (isLoading) {
-		return <div>Carregando...</div>;
-	}
-
-	if (isError) {
-		return <div>Erro ao carregar os dados.</div>;
-	}
 
 	return (
 		<div className="w-full px-8 mb-8 flex-1 flex flex-col">

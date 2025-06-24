@@ -17,21 +17,15 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface MatrixProps {
 	data?: TrainingsResponse;
-	isLoading?: boolean;
-	isError?: boolean;
 }
 
-export function MatrixTrainings({ data, isLoading, isError }: MatrixProps) {
+export function MatrixTrainings({ data }: MatrixProps) {
 	const queryClient = useQueryClient();
 	// const [columnCheckedState, setColumnCheckedState] = useState<
 	// 	Record<string, boolean>
 	// >({});
 
-	if (isLoading) {
-		return <div>Carregando...</div>;
-	}
-
-	if (isError || !data) {
+	if (!data) {
 		return <div>Erro ao carregar os dados.</div>;
 	}
 

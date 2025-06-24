@@ -7,12 +7,18 @@ import {
 } from "./ui/navigation-menu";
 import { Link } from "react-router";
 import logoPlain from "@/assets/logo-plain.svg";
+import { Button } from "./ui/button";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
-export function Navbar() {
+interface NavbarProps {
+	sync?: () => void;
+}
+
+export function Navbar({ sync }: NavbarProps) {
 	return (
 		<div className="flex px-8 py-4 items-center justify-between w-full z-50">
-			<NavigationMenu viewport={false}>
-				<NavigationMenuList className="flex">
+			<NavigationMenu className="w-full flex flex-1 max-w-full justify-between *:flex *:flex-1">
+				<NavigationMenuList className="flex flex-1">
 					<NavigationMenuItem>
 						<NavigationMenuLink
 							asChild
@@ -40,6 +46,13 @@ export function Navbar() {
 						>
 							<Link to="/matrix_trainings">Matriz de Treinamentos</Link>
 						</NavigationMenuLink>
+					</NavigationMenuItem>
+
+					<NavigationMenuItem className="ml-auto">
+						<Button variant="default" onClick={sync}>
+							Sincronizar
+							<Icon icon="fluent:arrow-sync-12-regular" className="size-4" />
+						</Button>
 					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>

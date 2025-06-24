@@ -40,6 +40,7 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 			},
 		},
 		async (request, reply) => {
+			console.log("Fetching collaborators summary");
 			const { nome, page } = request.query as { nome?: string; page: number };
 			const cargosHeader = request.headers["x-cargos"];
 			const setoresHeader = request.headers["x-setores"];

@@ -417,12 +417,219 @@ async function seed() {
 
 	console.log("Treinamentos: ", treinamentoResult.length);
 
-	const cargoTreinamentoResult = await db
+	const treinamentoIndexesAllRoles = [0, 1, 2, 3, 4, 6, 7, 8, 25];
+
+	let cargoTreinamentoResult = await db
 		.insert(cargoTreinamento)
-		.values([])
+		.values(
+			cargoResult.flatMap((cargo) =>
+				treinamentoIndexesAllRoles.map((index) => ({
+					cargo: cargo.id,
+					treinamento: treinamentoResult[index].id,
+				})),
+			),
+		)
 		.returning();
 
-	console.log("Cargos x Treinamentos: ", cargoTreinamentoResult.length);
+	let length = cargoTreinamentoResult.length;
+
+	cargoTreinamentoResult = await db
+		.insert(cargoTreinamento)
+		.values([
+			{ cargo: cargoResult[7].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[15].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[31].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[45].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[46].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[48].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[54].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[55].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[58].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[62].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[5].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[5].id },
+
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[9].id },
+			{ cargo: cargoResult[31].id, treinamento: treinamentoResult[9].id },
+			{ cargo: cargoResult[32].id, treinamento: treinamentoResult[9].id },
+			{ cargo: cargoResult[33].id, treinamento: treinamentoResult[9].id },
+
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[10].id },
+			{ cargo: cargoResult[31].id, treinamento: treinamentoResult[10].id },
+			{ cargo: cargoResult[32].id, treinamento: treinamentoResult[10].id },
+			{ cargo: cargoResult[33].id, treinamento: treinamentoResult[10].id },
+
+			{ cargo: cargoResult[31].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[32].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[33].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[40].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[41].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[42].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[59].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[60].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[62].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[63].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[11].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[11].id },
+
+			{ cargo: cargoResult[49].id, treinamento: treinamentoResult[12].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[12].id },
+			{ cargo: cargoResult[57].id, treinamento: treinamentoResult[12].id },
+			{ cargo: cargoResult[58].id, treinamento: treinamentoResult[12].id },
+
+			{ cargo: cargoResult[0].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[44].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[46].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[47].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[48].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[52].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[55].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[59].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[63].id, treinamento: treinamentoResult[13].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[13].id },
+
+			{ cargo: cargoResult[57].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[58].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[59].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[60].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[62].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[63].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[14].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[14].id },
+
+			{ cargo: cargoResult[6].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[11].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[23].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[31].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[32].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[33].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[40].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[41].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[42].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[49].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[51].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[52].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[53].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[57].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[58].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[59].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[60].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[62].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[63].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[15].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[15].id },
+
+			{ cargo: cargoResult[11].id, treinamento: treinamentoResult[16].id },
+			{ cargo: cargoResult[23].id, treinamento: treinamentoResult[16].id },
+			{ cargo: cargoResult[49].id, treinamento: treinamentoResult[16].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[16].id },
+
+			{ cargo: cargoResult[0].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[5].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[6].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[7].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[17].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[49].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[51].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[52].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[53].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[54].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[55].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[56].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[57].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[58].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[59].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[60].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[62].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[63].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[17].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[17].id },
+
+			{ cargo: cargoResult[0].id, treinamento: treinamentoResult[18].id },
+
+			{ cargo: cargoResult[11].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[31].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[32].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[33].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[40].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[41].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[42].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[49].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[51].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[52].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[53].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[59].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[60].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[61].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[62].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[63].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[19].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[19].id },
+
+			{ cargo: cargoResult[11].id, treinamento: treinamentoResult[20].id },
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[20].id },
+			{ cargo: cargoResult[23].id, treinamento: treinamentoResult[20].id },
+			{ cargo: cargoResult[33].id, treinamento: treinamentoResult[20].id },
+			{ cargo: cargoResult[35].id, treinamento: treinamentoResult[20].id },
+
+			{ cargo: cargoResult[2].id, treinamento: treinamentoResult[21].id },
+			{ cargo: cargoResult[8].id, treinamento: treinamentoResult[21].id },
+			{ cargo: cargoResult[27].id, treinamento: treinamentoResult[21].id },
+
+			{ cargo: cargoResult[0].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[1].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[2].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[3].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[6].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[7].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[8].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[9].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[14].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[15].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[17].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[21].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[23].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[24].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[27].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[29].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[36].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[38].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[41].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[43].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[44].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[50].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[52].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[57].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[64].id, treinamento: treinamentoResult[22].id },
+			{ cargo: cargoResult[65].id, treinamento: treinamentoResult[22].id },
+
+			{ cargo: cargoResult[2].id, treinamento: treinamentoResult[23].id },
+			{ cargo: cargoResult[6].id, treinamento: treinamentoResult[23].id },
+			{ cargo: cargoResult[8].id, treinamento: treinamentoResult[23].id },
+			{ cargo: cargoResult[15].id, treinamento: treinamentoResult[23].id },
+			{ cargo: cargoResult[22].id, treinamento: treinamentoResult[23].id },
+			{ cargo: cargoResult[57].id, treinamento: treinamentoResult[23].id },
+
+			{ cargo: cargoResult[58].id, treinamento: treinamentoResult[24].id },
+		])
+		.returning();
+
+	length += cargoTreinamentoResult.length;
+
+	console.log("Cargos x Treinamentos: ", length);
 
 	console.log("\nSeed completed successfully");
 

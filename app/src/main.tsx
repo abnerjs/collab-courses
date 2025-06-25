@@ -4,6 +4,8 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 
 import "./index.css";
 
@@ -17,6 +19,10 @@ declare module "@tanstack/react-router" {
 
 const queryClient = new QueryClient();
 
+const persister = createSyncStoragePersister({
+	storage: window.localStorage,
+});
+
 const root = document.getElementById("root");
 if (!root) {
 	throw new Error("Root element not found");
@@ -24,8 +30,11 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
 	<StrictMode>
-		<QueryClientProvider client={queryClient}>
+		<PersistQueryClientProvider
+			client={queryClient}
+			persistOptions={{ persister }}
+		>
 			<RouterProvider router={router} />
-		</QueryClientProvider>
+		</PersistQueryClientProvider>
 	</StrictMode>,
 );

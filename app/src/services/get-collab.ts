@@ -1,9 +1,27 @@
 import { env } from "@/env";
 
-export const getCollabSummary = async (): Promise<CollabSummaryResponse> => {
-	const response = await fetch(`${env.VITE_API_URL}/`);
-	const data = await response.json();
-	return data;
+interface CollabSummaryRequest {
+	nome?: string;
+}
+
+export const getCollabSummary = async ({
+	queryKey,
+}: {
+	queryKey: [string, CollabSummaryRequest];
+}): Promise<CollabSummaryResponse> => {
+	const [_key, { nome }] = queryKey as [string, CollabSummaryRequest];
+
+	const url = new URL(`${env.VITE_API_URL}/`);
+
+	if (nome && nome.trim().length > 0) {
+		url.searchParams.set("nome", nome);
+	}
+
+	const response = fetch(url).then((res) => {
+		return res.json();
+	});
+
+	return response;
 };
 
 export type CollabSummaryResponse = {
@@ -19,8 +37,5 @@ export type CollabSummaryResponse = {
 	}[];
 	meta: {
 		total: number;
-		pageIndex: number;
-		pageSize: number;
-		pageCount: number;
 	};
 };

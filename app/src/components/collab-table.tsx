@@ -7,7 +7,6 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 
-import { Input } from "@/components/ui/input";
 import {
 	Table,
 	TableBody,
@@ -121,73 +120,49 @@ export function CollabTable({ data }: CollabTableProps) {
 	});
 
 	return (
-		<div className="w-full px-8 mb-8 flex-1 flex flex-col">
-			<div className="flex items-center py-4 gap-4">
-				<h1 className="text-2xl font-semibold">Colaboradores</h1>
-				<Input
-					placeholder="Buscar por nome..."
-					value={
-						(table.getColumn("nomeColaborador")?.getFilterValue() as string) ??
-						""
-					}
-					onChange={(event) =>
-						table
-							.getColumn("nomeColaborador")
-							?.setFilterValue(event.target.value)
-					}
-					className="max-w-sm"
-				/>
-			</div>
-			<div className="rounded-md border flex-1 overflow-auto flex max-h-[calc(100dvh-180px)]">
-				<Table className="pt-20 overflow-auto">
-					<TableHeader className="sticky top-0 bg-white z-10">
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => {
-									return (
-										<TableHead key={header.id}>
-											{header.isPlaceholder
-												? null
-												: flexRender(
-														header.column.columnDef.header,
-														header.getContext(),
-													)}
-										</TableHead>
-									);
-								})}
+		<div className="rounded-md border flex-1 overflow-auto flex max-h-[calc(100dvh-180px)]">
+			<Table className="pt-20 overflow-auto">
+				<TableHeader className="sticky top-0 bg-white z-10">
+					{table.getHeaderGroups().map((headerGroup) => (
+						<TableRow key={headerGroup.id}>
+							{headerGroup.headers.map((header) => {
+								return (
+									<TableHead key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</TableHead>
+								);
+							})}
+						</TableRow>
+					))}
+				</TableHeader>
+				<TableBody>
+					{table.getRowModel().rows?.length ? (
+						table.getRowModel().rows.map((row) => (
+							<TableRow
+								key={row.id}
+								data-state={row.getIsSelected() && "selected"}
+							>
+								{row.getVisibleCells().map((cell) => (
+									<TableCell key={cell.id}>
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</TableCell>
+								))}
 							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && "selected"}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell
-									colSpan={columns.length}
-									className="h-24 text-center"
-								>
-									Nenhum resultado encontrado.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</div>
+						))
+					) : (
+						<TableRow>
+							<TableCell colSpan={columns.length} className="h-24 text-center">
+								Nenhum resultado encontrado.
+							</TableCell>
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
 		</div>
 	);
 }

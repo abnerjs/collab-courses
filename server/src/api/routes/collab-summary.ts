@@ -16,7 +16,6 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 				}),
 				querystring: z.object({
 					nome: z.string().optional(),
-					page: z.coerce.number().min(0).default(0),
 				}),
 				response: {
 					200: z.object({
@@ -40,7 +39,7 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 			},
 		},
 		async (request, reply) => {
-			const { nome, page } = request.query as { nome?: string; page: number };
+			const { nome } = request.query as { nome?: string };
 			const cargosHeader = request.headers["x-cargos"];
 			const setoresHeader = request.headers["x-setores"];
 			const statusesHeader = request.headers["x-statuses"];
@@ -76,17 +75,12 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 						? setoresHeader
 						: [];
 
-			const pageSize = 10;
-
 			const result = await searchCollaboratorsWithTrainingStatus({
 				nome,
 				setorIds: setores,
 				cargoIds: cargos,
 				statuses: statuses,
-				pageIndex: page,
-				pageSize,
 			});
-
 			return reply.status(200).send(result);
 		},
 	);

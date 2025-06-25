@@ -1,11 +1,9 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { getTrainings } from "../../services/get-trainings";
+import { getMatrixTrainings } from "../../services/get-matrix-trainings";
 import { changeTraining } from "../../services/change-trainings";
-import { success } from "zod/v4";
 import { createTraining } from "../../services/create-trainings";
 import { deleteTrainings } from "../../services/delete-trainings";
-import { getCollaboratorsById } from "../../services/get-collaborators";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -34,7 +32,7 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 			}),
 		},
 		async (_, reply) => {
-			const [cargoMatrix, treinamentos] = await getTrainings();
+			const [cargoMatrix, treinamentos] = await getMatrixTrainings();
 
 			reply.status(200).send({
 				treinamentos: treinamentos,

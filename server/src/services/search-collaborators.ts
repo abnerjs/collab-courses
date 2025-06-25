@@ -15,8 +15,6 @@ interface SearchCollaboratorsParams {
 	setorIds?: string[];
 	cargoIds?: string[];
 	statuses?: string[];
-	pageIndex: number;
-	pageSize: number;
 }
 
 export async function searchCollaboratorsWithTrainingStatus({
@@ -28,9 +26,11 @@ export async function searchCollaboratorsWithTrainingStatus({
 	const conditions = [];
 
 	if (nome) {
+		nome = nome.normalize("NFD").replace(/\p{M}/gu, "");
+
 		const tokens = nome.split(" ").filter((t) => t.length > 0);
 		for (const token of tokens) {
-			conditions.push(ilike(sql`unaccent(${colaborador.nome})`, `%${token}%`));
+			conditions.push(ilike(sql`(${colaborador.nome})`, `%${token}%`));
 		}
 	}
 

@@ -35,7 +35,7 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 			const response = await getTrainings({ descricao });
 
 			reply.status(200).send({
-				treinamentos: response,
+				data: response,
 			});
 		},
 	);

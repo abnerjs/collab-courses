@@ -39,177 +39,33 @@ import { Dialog } from "./ui/dialog";
 import { AddTrainingDialogContent } from "./add-training-dialog";
 import { ConfirmDeleteTraining } from "./confirm-delete-training";
 
-const columns: ColumnDef<TreinamentoComplete>[] = [
-	{
-		accessorKey: "treinamento",
-		header: "Treinamento",
-		cell: ({ row }) => {
-			return <h1>{row.original.nome}</h1>;
-		},
-		enableHiding: false,
-	},
-	{
-		accessorKey: "realizacao",
-		header: "Realização",
-		cell: ({ row }) => {
-			return row.original.realizacao
-				? dayjs(row.original.realizacao).format("DD/MM/YYYY")
-				: "";
-		},
-		enableHiding: false,
-	},
-	{
-		accessorKey: "nextRealizacao",
-		header: "Vencimento",
-		cell: ({ row }) => {
-			return row.original.realizacao
-				? dayjs(row.original.realizacao)
-						.add(row.original.validade, "day")
-						.format("DD/MM/YYYY")
-				: "";
-		},
-	},
-	{
-		accessorKey: "validade",
-		header: "Validade (dias)",
-		cell: ({ row }) => {
-			return row.original.validade;
-		},
-		enableHiding: false,
-	},
-	{
-		accessorKey: "status",
-		header: "Status",
-		cell: ({ row }) =>
-			row.original.realizacao ? (
-				dayjs(row.original.realizacao)
-					.add(row.original.validade, "day")
-					.isAfter(dayjs()) ? (
-					dayjs(row.original.realizacao).add(30, "day").isAfter(dayjs()) ? (
-						<Badge variant="secondary" className="text-zinc-950 bg-emerald-200">
-							No prazo
-						</Badge>
-					) : (
-						<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
-							Vencendo
-						</Badge>
-					)
-				) : (
-					<Badge variant="secondary" className="text-zinc-950 bg-red-200">
-						Vencido
-					</Badge>
-				)
-			) : (
-				<Badge variant="secondary" className="text-zinc-950 bg-zinc-200">
-					Não realizado
-				</Badge>
-			),
-	},
-	{
-		id: "actions",
-		cell: ({ row, table }) => {
-			const [isNewTrainingDialogOpen, setIsNewTrainingDialogOpen] =
-				React.useState(false);
-			const [isDeleteTrainingDialogOpen, setIsDeleteTrainingDialogOpen] =
-				React.useState(false);
-			const [
-				isDeleteAllTrainingsDialogOpen,
-				setIsDeleteAllTrainingsDialogOpen,
-			] = React.useState(false);
-
-			return (
-				<>
-					<DropdownMenu key={`actions-menu-${row.original.treinamentoId}`}>
-						<DropdownMenuTrigger asChild>
-							<Button
-								variant="secondary"
-								className="data-[state=open]:bg-muted text-muted-foreground flex size-8 ml-auto mr-4"
-								size="icon"
-							>
-								<Icon icon="fluent:more-vertical-16-regular" />
-								<span className="sr-only">Abrir menu</span>
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-32">
-							<DropdownMenuItem
-								onClick={() => setIsNewTrainingDialogOpen(true)}
-							>
-								Adicionar treinamento
-							</DropdownMenuItem>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								variant="destructive"
-								onClick={() => setIsDeleteTrainingDialogOpen(true)}
-							>
-								Apagar último treinamento
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								variant="destructive"
-								onClick={() => setIsDeleteAllTrainingsDialogOpen(true)}
-							>
-								Apagar todos deste treinamento
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-					{/* Dialogs */}
-					<Dialog
-						key={`add-training-dialog-${row.original.treinamentoId}`}
-						open={isNewTrainingDialogOpen}
-						onOpenChange={setIsNewTrainingDialogOpen}
-						modal={true}
-					>
-						<AddTrainingDialogContent
-							collaboratorId={table?.options?.meta?.collaboratorId || ""}
-							collaboratorName={table?.options?.meta?.collaboratorName || ""}
-							trainingId={row.original.treinamentoId}
-							trainingDescription={row.original.nome}
-						/>
-					</Dialog>
-					<Dialog
-						key={`delete-training-dialog-${row.original.treinamentoId}`}
-						open={isDeleteTrainingDialogOpen}
-						onOpenChange={setIsDeleteTrainingDialogOpen}
-						modal={true}
-					>
-						<ConfirmDeleteTraining
-							collaboratorId={table?.options?.meta?.collaboratorId || ""}
-							trainingId={row.original.treinamentoId}
-							collaboratorName={table?.options?.meta?.collaboratorName || ""}
-							trainingDescription={row.original.nome}
-						/>
-					</Dialog>
-					<Dialog
-						key={`delete-all-trainings-dialog-${row.original.treinamentoId}`}
-						open={isDeleteAllTrainingsDialogOpen}
-						onOpenChange={setIsDeleteAllTrainingsDialogOpen}
-						modal={true}
-					>
-						<ConfirmDeleteTraining
-							collaboratorId={table?.options?.meta?.collaboratorId || ""}
-							trainingId={row.original.treinamentoId}
-							collaboratorName={table?.options?.meta?.collaboratorName || ""}
-							trainingDescription={row.original.nome}
-							allTrainings
-						/>
-					</Dialog>
-				</>
-			);
-		},
-	},
-];
-
 interface MainTableProps {
 	table: ReturnType<typeof useReactTable<TreinamentoComplete>>;
+	columns: ColumnDef<TreinamentoComplete>[];
+	dialogState: { type: "add" | "delete" | "deleteAll"; rowId: string } | null;
+	setDialogState: React.Dispatch<
+		React.SetStateAction<{
+			type: "add" | "delete" | "deleteAll";
+			rowId: string;
+		} | null>
+	>;
 }
 
-function MainTable({ table }: MainTableProps) {
+function MainTable({
+	table,
+	columns,
+	dialogState,
+	setDialogState,
+}: MainTableProps) {
 	return (
 		<div className="flex flex-1 overflow-hidden rounded-lg border">
 			<Table>
 				<TableHeader className="bg-muted sticky top-0 z-10">
-					{table.getHeaderGroups().map((headerGroup) => (
+					{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+					{table.getHeaderGroups().map((headerGroup: any) => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
+							{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+							{headerGroup.headers.map((header: any) => {
 								return (
 									<TableHead key={header.id} colSpan={header.colSpan}>
 										{header.isPlaceholder
@@ -226,18 +82,29 @@ function MainTable({ table }: MainTableProps) {
 				</TableHeader>
 				<TableBody className="**:data-[slot=table-cell]:first:w-8">
 					{table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
-							</TableRow>
-						))
+						table
+							.getRowModel()
+							// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+							.rows.map((row: any) => (
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() && "selected"}
+								>
+									{/* biome-ignore lint/suspicious/noExplicitAny: <explanation> */}
+									{row.getVisibleCells().map((cell: any) => (
+										<TableCell key={cell.id}>
+											{cell.column.id === "actions" ? (
+												<RowActions row={row} table={table} />
+											) : (
+												flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							))
 					) : (
 						<TableRow>
 							<TableCell colSpan={columns.length} className="h-24 text-center">
@@ -261,9 +128,82 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
 		[],
 	);
+	const [dialogState, setDialogState] = React.useState<{
+		type: "add" | "delete" | "deleteAll";
+		rowId: string;
+	} | null>(null);
 
 	const collaboratorId = data.id;
 	const collaboratorName = data.nome;
+
+	const columns: ColumnDef<TreinamentoComplete>[] = [
+		{
+			accessorKey: "treinamento",
+			header: "Treinamento",
+			cell: ({ row }) => <h1>{row.original.nome}</h1>,
+			enableHiding: false,
+		},
+		{
+			accessorKey: "realizacao",
+			header: "Realização",
+			cell: ({ row }) =>
+				row.original.realizacao
+					? dayjs(row.original.realizacao).format("DD/MM/YYYY")
+					: "",
+			enableHiding: false,
+		},
+		{
+			accessorKey: "nextRealizacao",
+			header: "Vencimento",
+			cell: ({ row }) =>
+				row.original.realizacao
+					? dayjs(row.original.realizacao)
+							.add(row.original.validade, "day")
+							.format("DD/MM/YYYY")
+					: "",
+		},
+		{
+			accessorKey: "validade",
+			header: "Validade (dias)",
+			cell: ({ row }) => row.original.validade,
+			enableHiding: false,
+		},
+		{
+			accessorKey: "status",
+			header: "Status",
+			cell: ({ row }) =>
+				row.original.realizacao ? (
+					dayjs(row.original.realizacao)
+						.add(row.original.validade, "day")
+						.isAfter(dayjs()) ? (
+						dayjs(row.original.realizacao).add(30, "day").isAfter(dayjs()) ? (
+							<Badge
+								variant="secondary"
+								className="text-zinc-950 bg-emerald-200"
+							>
+								No prazo
+							</Badge>
+						) : (
+							<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
+								Vencendo
+							</Badge>
+						)
+					) : (
+						<Badge variant="secondary" className="text-zinc-950 bg-red-200">
+							Vencido
+						</Badge>
+					)
+				) : (
+					<Badge variant="secondary" className="text-zinc-950 bg-zinc-200">
+						Não realizado
+					</Badge>
+				),
+		},
+		{
+			id: "actions",
+			cell: ({ row, table }) => <RowActions row={row} table={table} />,
+		},
+	];
 
 	const createTable = (data: TreinamentoComplete[]) => {
 		return useReactTable({
@@ -342,31 +282,56 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 				value="pertinentes"
 				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
 			>
-				<MainTable table={tableTodos} />
+				<MainTable
+					table={tableTodos}
+					columns={columns}
+					dialogState={dialogState}
+					setDialogState={setDialogState}
+				/>
 			</TabsContent>
 			<TabsContent
 				value="no-prazo"
 				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
 			>
-				<MainTable table={tableNoPrazo} />
+				<MainTable
+					table={tableNoPrazo}
+					columns={columns}
+					dialogState={dialogState}
+					setDialogState={setDialogState}
+				/>
 			</TabsContent>
 			<TabsContent
 				value="vencendo"
 				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
 			>
-				<MainTable table={tableVencendo} />
+				<MainTable
+					table={tableVencendo}
+					columns={columns}
+					dialogState={dialogState}
+					setDialogState={setDialogState}
+				/>
 			</TabsContent>
 			<TabsContent
 				value="vencido"
 				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
 			>
-				<MainTable table={tableVencido} />
+				<MainTable
+					table={tableVencido}
+					columns={columns}
+					dialogState={dialogState}
+					setDialogState={setDialogState}
+				/>
 			</TabsContent>
 			<TabsContent
 				value="nao-realizado"
 				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
 			>
-				<MainTable table={tableNaoRealizado} />
+				<MainTable
+					table={tableNaoRealizado}
+					columns={columns}
+					dialogState={dialogState}
+					setDialogState={setDialogState}
+				/>
 			</TabsContent>
 		</Tabs>
 	);
@@ -380,3 +345,95 @@ type CustomTableMeta = {
 declare module "@tanstack/react-table" {
 	interface TableMeta<TData> extends CustomTableMeta {}
 }
+
+// Componente de ações da linha, fora do array de columns
+const RowActions = ({
+	row,
+	table,
+}: {
+	row: import("@tanstack/react-table").Row<TreinamentoComplete>;
+	table: import("@tanstack/react-table").Table<TreinamentoComplete>;
+}) => {
+	const [isNewTrainingDialogOpen, setIsNewTrainingDialogOpen] =
+		React.useState(false);
+	const [isDeleteTrainingDialogOpen, setIsDeleteTrainingDialogOpen] =
+		React.useState(false);
+	const [isDeleteAllTrainingsDialogOpen, setIsDeleteAllTrainingsDialogOpen] =
+		React.useState(false);
+
+	return (
+		<>
+			<DropdownMenu key={`actions-menu-${row.original.treinamentoId}`}>
+				<DropdownMenuTrigger asChild>
+					<Button
+						variant="secondary"
+						className="data-[state=open]:bg-muted text-muted-foreground flex size-8 ml-auto mr-4"
+						size="icon"
+					>
+						<Icon icon="fluent:more-vertical-16-regular" />
+						<span className="sr-only">Abrir menu</span>
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end" className="w-32">
+					<DropdownMenuItem onClick={() => setIsNewTrainingDialogOpen(true)}>
+						Adicionar treinamento
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem
+						variant="destructive"
+						onClick={() => setIsDeleteTrainingDialogOpen(true)}
+					>
+						Apagar último treinamento
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						variant="destructive"
+						onClick={() => setIsDeleteAllTrainingsDialogOpen(true)}
+					>
+						Apagar todos deste treinamento
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+			{/* Dialogs */}
+			<Dialog
+				key={`add-training-dialog-${row.original.treinamentoId}`}
+				open={isNewTrainingDialogOpen}
+				onOpenChange={setIsNewTrainingDialogOpen}
+				modal={true}
+			>
+				<AddTrainingDialogContent
+					collaboratorId={table?.options?.meta?.collaboratorId || ""}
+					collaboratorName={table?.options?.meta?.collaboratorName || ""}
+					trainingId={row.original.treinamentoId}
+					trainingDescription={row.original.nome}
+				/>
+			</Dialog>
+			<Dialog
+				key={`delete-training-dialog-${row.original.treinamentoId}`}
+				open={isDeleteTrainingDialogOpen}
+				onOpenChange={setIsDeleteTrainingDialogOpen}
+				modal={true}
+			>
+				<ConfirmDeleteTraining
+					collaboratorId={table?.options?.meta?.collaboratorId || ""}
+					trainingId={row.original.treinamentoId}
+					collaboratorName={table?.options?.meta?.collaboratorName || ""}
+					trainingDescription={row.original.nome}
+				/>
+			</Dialog>
+			<Dialog
+				key={`delete-all-trainings-dialog-${row.original.treinamentoId}`}
+				open={isDeleteAllTrainingsDialogOpen}
+				onOpenChange={setIsDeleteAllTrainingsDialogOpen}
+				modal={true}
+			>
+				<ConfirmDeleteTraining
+					collaboratorId={table?.options?.meta?.collaboratorId || ""}
+					trainingId={row.original.treinamentoId}
+					collaboratorName={table?.options?.meta?.collaboratorName || ""}
+					trainingDescription={row.original.nome}
+					allTrainings
+				/>
+			</Dialog>
+		</>
+	);
+};

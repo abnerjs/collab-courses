@@ -36,7 +36,10 @@ export function TrainingTable({ data }: TrainingTableProps) {
 			cell: ({ row }) => (
 				<div className="flex items-center gap-2">
 					{row.original.nome}
-					<Badge variant="secondary">{row.original.validade}</Badge>
+					<Badge variant="secondary">
+						{row.original.validade}
+						{row.original.validade === 1 ? " dia" : " dias"}
+					</Badge>
 				</div>
 			),
 		},

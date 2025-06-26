@@ -40,26 +40,24 @@ export const Route = createFileRoute("/")({
 		});
 
 		return (
-			<>
-				<div className="w-full px-8 mb-8 flex-1 flex flex-col">
-					<div className="flex items-center py-4 gap-4">
-						<h1 className="text-2xl font-semibold">Colaboradores</h1>
-						<Input
-							placeholder="Buscar por nome..."
-							value={search}
-							onChange={setCurrentSearch}
-							className="max-w-sm"
-						/>
-					</div>
-					{isLoading && !data && (
-						<ErrorLoadingMessage message="Carregando colaboradores..." />
-					)}
-					{isError && (
-						<ErrorLoadingMessage message="Erro ao carregar colaboradores." />
-					)}
-					{!isLoading && !!data && <CollabTable data={data} />}
+			<div className="w-full px-8 mb-8 flex-1 flex flex-col">
+				<div className="flex items-center py-4 gap-4">
+					<h1 className="text-2xl font-semibold">Colaboradores</h1>
+					<Input
+						placeholder="Buscar por nome..."
+						value={search}
+						onChange={setCurrentSearch}
+						className="max-w-sm"
+					/>
 				</div>
-			</>
+				{isLoading && !data && (
+					<ErrorLoadingMessage message="Carregando colaboradores..." />
+				)}
+				{isError && (
+					<ErrorLoadingMessage message="Erro ao carregar colaboradores." />
+				)}
+				{!isLoading && !!data && <CollabTable data={data} />}
+			</div>
 		);
 	},
 });

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import dayjs from "dayjs";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useRef } from "react";
+import React from "react";
 import { Calendar } from "./ui/calendar";
 import { createTraining } from "@/services/create-trainings";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,7 +31,6 @@ export function AddTrainingDialogContent({
 }: AddTrainingDialogProps) {
 	const [open, setOpen] = React.useState(false);
 	const [date, setDate] = React.useState<Date | undefined>(undefined);
-	const dialog = useRef(null);
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
@@ -46,8 +45,16 @@ export function AddTrainingDialogContent({
 		},
 	});
 
+	function handleConfirm() {
+		mutation.mutate({
+			colaboradorId: collaboratorId,
+			treinamentoId: trainingId,
+			realizacao: date ? new Date(date) : new Date(),
+		});
+	}
+
 	return (
-		<DialogContent ref={dialog} className="sm:max-w-[425px]">
+		<DialogContent className="sm:max-w-[425px]">
 			<DialogHeader>
 				<DialogTitle>Registro de treinamento</DialogTitle>
 				<DialogDescription>
@@ -96,16 +103,13 @@ export function AddTrainingDialogContent({
 				</DialogClose>
 				<DialogClose asChild>
 					<Button
-						onClick={async () => {
-							await createTraining({
-								colaboradorId: collaboratorId,
-								treinamentoId: trainingId,
-								realizacao: date ? new Date(date) : new Date(),
-							}).then(() => window.location.reload());
-						}}
+						onClick={handleConfirm}
+						disabled={mutation.status === "pending"}
 						type="submit"
 					>
-						Confirmar treinamento
+						{mutation.status === "pending"
+							? "Salvando..."
+							: "Confirmar treinamento"}
 					</Button>
 				</DialogClose>
 			</DialogFooter>

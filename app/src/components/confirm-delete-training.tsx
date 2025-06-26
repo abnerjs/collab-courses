@@ -7,9 +7,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { useRef } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteTraining } from "@/services/delete-trainings";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
@@ -26,7 +25,6 @@ export function ConfirmDeleteTraining({
 	trainingDescription,
 	allTrainings,
 }: AddTrainingDialogProps) {
-	const dialog = useRef(null);
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
@@ -38,8 +36,16 @@ export function ConfirmDeleteTraining({
 		},
 	});
 
+	function handleDelete() {
+		mutation.mutate({
+			treinamentoId: trainingId,
+			colaboradorId: collaboratorId,
+			lastValue: !allTrainings,
+		});
+	}
+
 	return (
-		<DialogContent ref={dialog} className="sm:max-w-[425px]">
+		<DialogContent className="sm:max-w-[425px]">
 			<DialogHeader>
 				<DialogTitle>
 					Apagar treinamento{allTrainings ? "s" : " mais recente"}
@@ -55,25 +61,14 @@ export function ConfirmDeleteTraining({
 				</DialogClose>
 				<DialogClose asChild>
 					<Button
-						onClick={async () => {
-							// mutation.mutate({
-							// 	treinamentoId: trainingId,
-							// 	colaboradorId: collaboratorId,
-							// 	lastValue: !allTrainings,
-							// });
-
-							await deleteTraining({
-								treinamentoId: trainingId,
-								colaboradorId: collaboratorId,
-								lastValue: !allTrainings,
-							}).then(() => {
-								window.location.reload();
-							});
-						}}
+						onClick={handleDelete}
+						disabled={mutation.status === "pending"}
 						type="submit"
 						variant="destructive"
 					>
-						Confirmar exclusão
+						{mutation.status === "pending"
+							? "Excluindo..."
+							: "Confirmar exclusão"}
 					</Button>
 				</DialogClose>
 			</DialogFooter>

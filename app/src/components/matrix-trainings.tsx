@@ -89,8 +89,8 @@ export function MatrixTrainings({ data }: MatrixProps) {
 	};
 
 	return (
-		<div className="w-full px-8 flex flex-1">
-			<div className="overflow-x-auto overflow-y-hidden max-h-[calc(100dvh-89px)] flex">
+		<div className="w-full flex flex-1">
+			<div className="overflow-x-auto overflow-y-hidden max-h-[calc(100dvh-169px)] flex border rounded-lg">
 				<Table className="pt-20 overflow-auto">
 					<TableHeader className="sticky top-0 bg-white z-30">
 						<TableRow>

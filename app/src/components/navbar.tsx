@@ -12,16 +12,9 @@ export function Navbar() {
 	return (
 		<div className="flex px-8 py-4 items-center justify-between w-full z-50">
 			<NavigationMenu viewport={false}>
-				<NavigationMenuList className="flex">
+				<NavigationMenuList className="flex items-center">
 					<NavigationMenuItem>
-						<NavigationMenuLink
-							asChild
-							className={navigationMenuTriggerStyle()}
-						>
-							<Link to="/">
-								<img src={logoPlain} alt="Genu-in" className="size-6" />
-							</Link>
-						</NavigationMenuLink>
+						<img src={logoPlain} alt="Genu-in" className="size-6 mr-4" />
 					</NavigationMenuItem>
 
 					<NavigationMenuItem>
@@ -29,7 +22,7 @@ export function Navbar() {
 							asChild
 							className={navigationMenuTriggerStyle()}
 						>
-							<Link to="/">Início</Link>
+							<Link to="/">Colaboradores</Link>
 						</NavigationMenuLink>
 					</NavigationMenuItem>
 

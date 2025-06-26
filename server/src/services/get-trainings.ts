@@ -30,6 +30,7 @@ export async function getTrainings({ descricao }: FilterParams) {
 		.select({
 			id: treinamento.id,
 			nome: treinamento.nome,
+			validade: treinamento.validade,
 			noPrazo: sql<number>`COUNT(colaborador.id) FILTER (WHERE
 						CASE
 							WHEN ${treinamentoColaborador.realizacao} IS NULL THEN 'nao_realizado'

@@ -19,6 +19,7 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 						z.object({
 							id: z.string(),
 							nome: z.string(),
+							validade: z.number(),
 							noPrazo: z.number(),
 							vencendo: z.number(),
 							vencido: z.number(),

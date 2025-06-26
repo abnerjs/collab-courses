@@ -1,7 +1,7 @@
 import { env } from "@/env";
 
 export const getTrainingsMatrix = async (): Promise<TrainingsResponse> => {
-	const response = await fetch(`${env.VITE_API_URL}/trainings`);
+	const response = await fetch(`${env.VITE_API_URL}/matrix-trainings`);
 	const data = await response.json();
 	return data;
 };

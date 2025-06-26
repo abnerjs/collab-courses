@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { getCollabDetails } from "@/services/detail-collab";
 import type { CollabDetailResponse } from "@/services/detail-collab";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/detail-collab/$id")({
 	component: function DetailCollab() {

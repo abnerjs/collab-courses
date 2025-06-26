@@ -10,9 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrainingsRouteImport } from './routes/trainings'
-import { Route as MatrizTreinamentosRouteImport } from './routes/matriz-treinamentos'
 import { Route as MatrixTrainingsRouteImport } from './routes/matrix-trainings'
-import { Route as DetailCollabRouteImport } from './routes/detail-collab'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DetailCollabIdRouteImport } from './routes/detail-collab.$id'
 
@@ -21,19 +19,9 @@ const TrainingsRoute = TrainingsRouteImport.update({
   path: '/trainings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MatrizTreinamentosRoute = MatrizTreinamentosRouteImport.update({
-  id: '/matriz-treinamentos',
-  path: '/matriz-treinamentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MatrixTrainingsRoute = MatrixTrainingsRouteImport.update({
   id: '/matrix-trainings',
   path: '/matrix-trainings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DetailCollabRoute = DetailCollabRouteImport.update({
-  id: '/detail-collab',
-  path: '/detail-collab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -42,69 +30,48 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DetailCollabIdRoute = DetailCollabIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => DetailCollabRoute,
+  id: '/detail-collab/$id',
+  path: '/detail-collab/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/detail-collab': typeof DetailCollabRouteWithChildren
   '/matrix-trainings': typeof MatrixTrainingsRoute
-  '/matriz-treinamentos': typeof MatrizTreinamentosRoute
   '/trainings': typeof TrainingsRoute
   '/detail-collab/$id': typeof DetailCollabIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/detail-collab': typeof DetailCollabRouteWithChildren
   '/matrix-trainings': typeof MatrixTrainingsRoute
-  '/matriz-treinamentos': typeof MatrizTreinamentosRoute
   '/trainings': typeof TrainingsRoute
   '/detail-collab/$id': typeof DetailCollabIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/detail-collab': typeof DetailCollabRouteWithChildren
   '/matrix-trainings': typeof MatrixTrainingsRoute
-  '/matriz-treinamentos': typeof MatrizTreinamentosRoute
   '/trainings': typeof TrainingsRoute
   '/detail-collab/$id': typeof DetailCollabIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/detail-collab'
-    | '/matrix-trainings'
-    | '/matriz-treinamentos'
-    | '/trainings'
-    | '/detail-collab/$id'
+  fullPaths: '/' | '/matrix-trainings' | '/trainings' | '/detail-collab/$id'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/detail-collab'
-    | '/matrix-trainings'
-    | '/matriz-treinamentos'
-    | '/trainings'
-    | '/detail-collab/$id'
+  to: '/' | '/matrix-trainings' | '/trainings' | '/detail-collab/$id'
   id:
     | '__root__'
     | '/'
-    | '/detail-collab'
     | '/matrix-trainings'
-    | '/matriz-treinamentos'
     | '/trainings'
     | '/detail-collab/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DetailCollabRoute: typeof DetailCollabRouteWithChildren
   MatrixTrainingsRoute: typeof MatrixTrainingsRoute
-  MatrizTreinamentosRoute: typeof MatrizTreinamentosRoute
   TrainingsRoute: typeof TrainingsRoute
+  DetailCollabIdRoute: typeof DetailCollabIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,25 +83,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/matriz-treinamentos': {
-      id: '/matriz-treinamentos'
-      path: '/matriz-treinamentos'
-      fullPath: '/matriz-treinamentos'
-      preLoaderRoute: typeof MatrizTreinamentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/matrix-trainings': {
       id: '/matrix-trainings'
       path: '/matrix-trainings'
       fullPath: '/matrix-trainings'
       preLoaderRoute: typeof MatrixTrainingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/detail-collab': {
-      id: '/detail-collab'
-      path: '/detail-collab'
-      fullPath: '/detail-collab'
-      preLoaderRoute: typeof DetailCollabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -146,32 +99,19 @@ declare module '@tanstack/react-router' {
     }
     '/detail-collab/$id': {
       id: '/detail-collab/$id'
-      path: '/$id'
+      path: '/detail-collab/$id'
       fullPath: '/detail-collab/$id'
       preLoaderRoute: typeof DetailCollabIdRouteImport
-      parentRoute: typeof DetailCollabRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface DetailCollabRouteChildren {
-  DetailCollabIdRoute: typeof DetailCollabIdRoute
-}
-
-const DetailCollabRouteChildren: DetailCollabRouteChildren = {
-  DetailCollabIdRoute: DetailCollabIdRoute,
-}
-
-const DetailCollabRouteWithChildren = DetailCollabRoute._addFileChildren(
-  DetailCollabRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DetailCollabRoute: DetailCollabRouteWithChildren,
   MatrixTrainingsRoute: MatrixTrainingsRoute,
-  MatrizTreinamentosRoute: MatrizTreinamentosRoute,
   TrainingsRoute: TrainingsRoute,
+  DetailCollabIdRoute: DetailCollabIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

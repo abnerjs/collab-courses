@@ -55,44 +55,50 @@ export function CollabTable({ data }: CollabTableProps) {
 			header: "Treinamentos",
 			cell: ({ row }) => (
 				<div className="flex items-center gap-2">
-					<Badge
-						variant="secondary"
-						className="bg-green-400 py-0 pr-0 flex gap-1.5 border-0"
-					>
-						<span className="font-semibold">{row.original.noPrazo}</span>
+					{row.original.noPrazo > 0 && (
 						<Badge
 							variant="secondary"
-							className="bg-green-600 text-white rounded-l-none"
+							className="bg-green-400 py-0 pr-0 flex gap-1.5 border-0"
 						>
-							No prazo
+							<span className="font-semibold">{row.original.noPrazo}</span>
+							<Badge
+								variant="secondary"
+								className="bg-green-600 text-white rounded-l-none"
+							>
+								No prazo
+							</Badge>
 						</Badge>
-					</Badge>
-					<Badge
-						variant="secondary"
-						className="bg-yellow-400 py-0 pr-0 flex gap-1.5 border-0"
-					>
-						<span className="font-semibold">{row.original.vencendo}</span>
+					)}
+					{row.original.vencendo > 0 && (
 						<Badge
 							variant="secondary"
-							className="bg-yellow-600 text-white rounded-l-none"
+							className="bg-yellow-400 py-0 pr-0 flex gap-1.5 border-0"
 						>
-							Vencendo
+							<span className="font-semibold">{row.original.vencendo}</span>
+							<Badge
+								variant="secondary"
+								className="bg-yellow-600 text-white rounded-l-none"
+							>
+								Vencendo
+							</Badge>
 						</Badge>
-					</Badge>
-					<Badge
-						variant="secondary"
-						className="bg-red-400 py-0 pr-0 flex gap-1.5 border-0"
-					>
-						<span className="font-semibold">
-							{row.original.vencido + row.original.naoRealizado}
-						</span>
+					)}
+					{row.original.vencido + row.original.naoRealizado > 0 && (
 						<Badge
 							variant="secondary"
-							className="bg-red-700 text-white rounded-l-none"
+							className="bg-red-400 py-0 pr-0 flex gap-1.5 border-0"
 						>
-							Necessário
+							<span className="font-semibold">
+								{row.original.vencido + row.original.naoRealizado}
+							</span>
+							<Badge
+								variant="secondary"
+								className="bg-red-700 text-white rounded-l-none"
+							>
+								Necessário
+							</Badge>
 						</Badge>
-					</Badge>
+					)}
 				</div>
 			),
 		},

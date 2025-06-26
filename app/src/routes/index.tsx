@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
 			setSearch(event.target.value);
 		}
 
-		const { data, isLoading, isError, isStale } = useQuery({
+		const { data, isLoading, isError } = useQuery({
 			queryKey: ["colaboradores", search],
 			queryFn: ({ queryKey }) =>
 				getCollabSummary({
@@ -50,7 +50,6 @@ export const Route = createFileRoute("/")({
 							onChange={setCurrentSearch}
 							className="max-w-sm"
 						/>
-						<h1>{isStale ? "sim" : "nao"}</h1>
 					</div>
 					{isLoading && !data && (
 						<ErrorLoadingMessage message="Carregando colaboradores..." />

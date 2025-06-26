@@ -36,8 +36,7 @@ export async function getMatrixTrainings() {
 			id: treinamento.id,
 			nome: treinamento.nome,
 		})
-		.from(treinamento)
-		.orderBy(treinamento.nome);
+		.from(treinamento);
 
 	return [result, treinamentos];
 }

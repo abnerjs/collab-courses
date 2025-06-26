@@ -7,7 +7,7 @@ import { deleteTrainings } from "../../services/delete-trainings";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
-		"/trainings",
+		"/matrix-trainings",
 		{
 			schema: z.object({
 				response: z.object({

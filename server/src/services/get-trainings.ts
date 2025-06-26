@@ -74,7 +74,8 @@ export async function getTrainings({ descricao }: FilterParams) {
 			),
 		)
 		.where(where)
-		.groupBy(treinamento.id);
+		.groupBy(treinamento.id)
+		.orderBy(treinamento.nome);
 
 	return response;
 }

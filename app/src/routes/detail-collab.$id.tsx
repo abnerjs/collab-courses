@@ -1,4 +1,4 @@
-import { DetailCollabTable } from "@/components/detail-collab-table";
+import { DetailCollabTable } from "@/components/detail-collab-table/";
 import { ErrorLoadingMessage } from "@/components/error-loading-message";
 import { Badge } from "@/components/ui/badge";
 import { getCollabDetails } from "@/services/detail-collab";

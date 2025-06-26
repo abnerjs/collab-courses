@@ -4,8 +4,41 @@ import { getMatrixTrainings } from "../../services/get-matrix-trainings";
 import { changeTraining } from "../../services/change-trainings";
 import { createTraining } from "../../services/create-trainings";
 import { deleteTrainings } from "../../services/delete-trainings";
+import { getTrainings } from "../../services/get-trainings";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
+	app.get(
+		"/trainings",
+		{
+			schema: z.object({
+				querystring: z.object({
+					descricao: z.string().optional(),
+				}),
+				response: z.object({
+					treinamentos: z.array(
+						z.object({
+							id: z.string(),
+							nome: z.string(),
+							noPrazo: z.number(),
+							vencendo: z.number(),
+							vencido: z.number(),
+							naoRealizado: z.number(),
+						}),
+					),
+				}),
+			}),
+		},
+		async (request, reply) => {
+			const { descricao } = request.query as { descricao?: string };
+
+			const response = await getTrainings({ descricao });
+
+			reply.status(200).send({
+				treinamentos: response,
+			});
+		},
+	);
+
 	app.get(
 		"/matrix-trainings",
 		{

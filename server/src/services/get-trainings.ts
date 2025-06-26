@@ -1,4 +1,4 @@
-import { sql, eq, and, ilike } from "drizzle-orm";
+import { sql, eq, and, ilike, desc } from "drizzle-orm";
 import { db } from "../db";
 import {
 	cargoTreinamento,
@@ -15,7 +15,9 @@ export async function getTrainings({ descricao }: FilterParams) {
 	const conditions = [];
 
 	if (descricao) {
+		descricao = descricao.trim();
 		descricao = descricao.normalize("NFD").replace(/\p{M}/gu, "");
+		descricao = descricao.replace("ç", "c");
 
 		const tokens = descricao.split(" ").filter((t) => t.length > 0);
 
@@ -79,3 +81,5 @@ export async function getTrainings({ descricao }: FilterParams) {
 
 	return response;
 }
+
+export async function getTrainingById(id: string) {}

@@ -27,6 +27,7 @@ export async function searchCollaboratorsWithTrainingStatus({
 
 	if (nome) {
 		nome = nome.normalize("NFD").replace(/\p{M}/gu, "");
+		nome = nome.replace("ç", "c").trim();
 
 		const tokens = nome.split(" ").filter((t) => t.length > 0);
 		for (const token of tokens) {

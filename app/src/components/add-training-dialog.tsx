@@ -97,16 +97,11 @@ export function AddTrainingDialogContent({
 				<DialogClose asChild>
 					<Button
 						onClick={async () => {
-							// mutation.mutate({
-							// 	colaboradorId: collaboratorId,
-							// 	treinamentoId: trainingId,
-							// 	realizacao: date ? new Date(date) : new Date(),
-							// });
 							await createTraining({
 								colaboradorId: collaboratorId,
 								treinamentoId: trainingId,
 								realizacao: date ? new Date(date) : new Date(),
-							}).finally(() => window.location.reload());
+							}).then(() => window.location.reload());
 						}}
 						type="submit"
 					>

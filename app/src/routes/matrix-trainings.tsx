@@ -1,7 +1,16 @@
 import { ErrorLoadingMessage } from "@/components/error-loading-message";
 import { MatrixTrainings } from "@/components/matrix-trainings";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { getTrainingsMatrix } from "@/services/get-trainings";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -48,11 +57,6 @@ export const Route = createFileRoute("/matrix-trainings")({
 			}
 		};
 
-		const handleCancel = () => {
-			setOpen(false);
-			setFile(null);
-		};
-
 		return (
 			<div className="w-full px-8 mb-8 flex-1 flex flex-col">
 				<div className="flex w-full items-center py-4 gap-4">
@@ -62,6 +66,13 @@ export const Route = createFileRoute("/matrix-trainings")({
 							<Button className="ml-auto">Importar matriz</Button>
 						</DialogTrigger>
 						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Importar matriz de treinamentos</DialogTitle>
+
+								<DialogDescription>
+									Utilize o seletor abaixo para importar um arquivo .xlsx
+								</DialogDescription>
+							</DialogHeader>
 							<div
 								{...getRootProps()}
 								className="border-2 border-dashed rounded p-6 text-center cursor-pointer mb-4"
@@ -80,18 +91,19 @@ export const Route = createFileRoute("/matrix-trainings")({
 									</p>
 								)}
 							</div>
-							<div className="flex justify-end gap-2">
-								<Button
-									variant="outline"
-									onClick={handleCancel}
-									disabled={loading}
-								>
-									Cancelar
-								</Button>
-								<Button onClick={handleImport} disabled={!file || loading}>
-									{loading ? "Enviando..." : "Enviar"}
-								</Button>
-							</div>
+
+							<DialogFooter>
+								<DialogClose asChild>
+									<Button variant="outline" disabled={loading}>
+										Cancelar
+									</Button>
+								</DialogClose>
+								<DialogClose asChild>
+									<Button onClick={handleImport} disabled={!file || loading}>
+										{loading ? "Enviando..." : "Enviar"}
+									</Button>
+								</DialogClose>
+							</DialogFooter>
 						</DialogContent>
 					</Dialog>
 				</div>

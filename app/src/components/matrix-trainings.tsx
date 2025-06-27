@@ -1,19 +1,30 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { changeTrainings } from "@/services/change-trainings";
-import type {
-	TrainingsResponse,
-	Treinamento,
-	Cargo,
-} from "@/services/get-trainings";
+import type { TrainingsResponse } from "@/services/get-trainings";
 import { useQueryClient } from "@tanstack/react-query";
+import React from "react";
+import {
+	AutoSizer,
+	CellMeasurer,
+	CellMeasurerCache,
+	MultiGrid,
+} from "react-virtualized";
+
+const STYLE = {
+	border: "1px solid #ddd",
+};
+const STYLE_BOTTOM_LEFT_GRID = {
+	borderRight: "2px solid #aaa",
+	backgroundColor: "#f7f7f7",
+};
+const STYLE_TOP_LEFT_GRID = {
+	borderBottom: "2px solid #aaa",
+	borderRight: "2px solid #aaa",
+	fontWeight: "bold",
+};
+const STYLE_TOP_RIGHT_GRID = {
+	borderBottom: "2px solid #aaa",
+	fontWeight: "bold",
+};
 
 interface MatrixProps {
 	data: TrainingsResponse;
@@ -21,57 +32,6 @@ interface MatrixProps {
 
 export function MatrixTrainings({ data }: MatrixProps) {
 	const queryClient = useQueryClient();
-	// const [columnCheckedState, setColumnCheckedState] = useState<
-	// 	Record<string, boolean>
-	// >({});
-
-	// const areAllChecked = (trainingId: string) => {
-	// 	return (
-	// 		data?.cargos?.every((role) =>
-	// 			role.treinamentos.some((t) => t.id === trainingId),
-	// 		) ?? false
-	// 	);
-	// };
-
-	// const handleHeaderCheckboxChange = async (
-	// 	trainingId: string,
-	// 	checked: boolean,
-	// ) => {
-	// 	setColumnCheckedState((prevState) => ({
-	// 		...prevState,
-	// 		[trainingId]: checked,
-	// 	}));
-
-	// 	for (const role of data?.cargos || []) {
-	// 		await changeTrainings(trainingId, role.id, checked);
-	// 	}
-
-	// 	queryClient.setQueryData(
-	// 		["matriz-treinamentos"],
-	// 		(oldData?: TrainingsResponse) => {
-	// 			if (!oldData) return;
-
-	// 			const updatedCargos = oldData.cargos.map((role) => ({
-	// 				...role,
-	// 				treinamentos: checked
-	// 					? Array.from(new Set([...role.treinamentos, { id: trainingId }]))
-	// 					: role.treinamentos.filter((t) => t.id !== trainingId),
-	// 			}));
-
-	// 			return {
-	// 				...oldData,
-	// 				cargos: [...updatedCargos], // Garante nova referência para disparar re-renderização
-	// 			};
-	// 		},
-	// 	);
-
-	// 	const updatedData = queryClient.getQueryData<TrainingsResponse>([
-	// 		"matriz-treinamentos",
-	// 	]);
-
-	// 	data = updatedData || data;
-	// };
-
 	const handleChangeStatus = async (
 		treinamentoId: string,
 		cargoId: string,
@@ -88,58 +48,128 @@ export function MatrixTrainings({ data }: MatrixProps) {
 		}
 	};
 
+	const columnCount = data.treinamentos.length + 1;
+	const rowCount = data.cargos.length + 1;
+	const cache = React.useRef(
+		new CellMeasurerCache({
+			defaultHeight: 40,
+			defaultWidth: 120,
+			fixedHeight: true,
+			minWidth: 80,
+		}),
+	).current;
+
 	return (
 		<div className="w-full flex flex-1">
-			<div className="overflow-x-auto overflow-y-hidden max-h-[calc(100dvh-169px)] flex border rounded-lg">
-				<Table className="pt-20 overflow-auto">
-					<TableHeader className="sticky top-0 bg-white z-30">
-						<TableRow>
-							<TableHead className="sticky left-0 bg-white z-20">
-								Cargo
-							</TableHead>
-							{data.treinamentos?.map((training: Treinamento) => (
-								<TableHead key={training.id} className="whitespace-nowrap">
-									{/* <Checkbox
-										className="mr-2"
-										defaultChecked={areAllChecked(training.id)}
-										onCheckedChange={(checked) =>
-											handleHeaderCheckboxChange(
-												training.id,
-												checked as boolean,
-											)
-										}
-									/> */}
-									<span>{training.nome}</span>
-								</TableHead>
-							))}
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{data.cargos?.map((role: Cargo) => (
-							<TableRow key={role.id}>
-								<TableCell className="sticky left-0 bg-white z-10">
-									{role.descricao}
-								</TableCell>
-								{data?.treinamentos.map((training: Treinamento) => {
-									const status = role.treinamentos.some(
-										(t) => t.id === training.id,
-									);
-
-									return (
-										<TableCell key={training.id}>
-											<Checkbox
-												defaultChecked={status}
-												onCheckedChange={(_) =>
-													handleChangeStatus(training.id, role.id, !status)
-												}
-											/>
-										</TableCell>
-									);
-								})}
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
+			<div className="flex flex-1 border rounded-lg">
+				<AutoSizer className="rounded-lg">
+					{({ width, height }) => (
+						<MultiGrid
+							fixedColumnCount={1}
+							className="rounded-lg"
+							fixedRowCount={1}
+							cellRenderer={({ columnIndex, key, rowIndex, style, parent }) => {
+								return (
+									<CellMeasurer
+										cache={cache}
+										columnIndex={columnIndex}
+										key={key}
+										parent={parent}
+										rowIndex={rowIndex}
+									>
+										{({ measure, registerChild }) => {
+											const cellClass = `border border-zinc-200 bg-white px-2 py-1 box-border${
+												rowIndex === 0 || columnIndex === 0
+													? " font-bold bg-zinc-50"
+													: ""
+											}`;
+											if (rowIndex === 0 && columnIndex === 0) {
+												return (
+													<div
+														ref={registerChild}
+														style={style}
+														onLoad={measure}
+														className={cellClass}
+													>
+														<b>Cargo</b>
+													</div>
+												);
+											}
+											if (rowIndex === 0 && columnIndex > 0) {
+												return (
+													<div
+														ref={registerChild}
+														style={style}
+														onLoad={measure}
+														className={`${cellClass} whitespace-nowrap`}
+													>
+														<b>{data.treinamentos[columnIndex - 1].nome}</b>
+													</div>
+												);
+											}
+											if (rowIndex > 0 && columnIndex === 0) {
+												return (
+													<div
+														ref={registerChild}
+														style={style}
+														onLoad={measure}
+														className={`${cellClass} whitespace-nowrap`}
+													>
+														{data.cargos[rowIndex - 1].descricao}
+													</div>
+												);
+											}
+											if (rowIndex > 0 && columnIndex > 0) {
+												const cargo = data.cargos[rowIndex - 1];
+												const treinamento = data.treinamentos[columnIndex - 1];
+												const status = cargo.treinamentos.some(
+													(t) => t.id === treinamento.id,
+												);
+												return (
+													<div
+														ref={registerChild}
+														style={style}
+														onLoad={measure}
+														className={`${cellClass} flex items-center justify-center`}
+													>
+														<input
+															type="checkbox"
+															checked={status}
+															onChange={() =>
+																handleChangeStatus(
+																	treinamento.id,
+																	cargo.id,
+																	!status,
+																)
+															}
+															className="accent-zinc-950 size-4"
+														/>
+													</div>
+												);
+											}
+											return null;
+										}}
+									</CellMeasurer>
+								);
+							}}
+							columnWidth={cache.columnWidth}
+							columnCount={columnCount}
+							enableFixedColumnScroll
+							enableFixedRowScroll
+							height={height}
+							rowHeight={40}
+							rowCount={rowCount}
+							style={{}}
+							styleBottomRightGrid={{ ...STYLE }}
+							styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
+							styleTopLeftGrid={STYLE_TOP_LEFT_GRID}
+							styleTopRightGrid={STYLE_TOP_RIGHT_GRID}
+							width={width}
+							hideTopRightGridScrollbar
+							hideBottomLeftGridScrollbar
+						/>
+					)}
+				</AutoSizer>
 			</div>
 		</div>
 	);

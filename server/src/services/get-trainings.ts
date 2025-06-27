@@ -1,6 +1,7 @@
 import { sql, eq, and, ilike, desc } from "drizzle-orm";
 import { db } from "../db";
 import {
+	cargo,
 	cargoTreinamento,
 	colaborador,
 	treinamento,
@@ -95,11 +96,12 @@ export async function getTrainingById(id: string) {
 		.select({
 			id: colaborador.id,
 			nome: colaborador.nome,
-			cargo: colaborador.cargo,
+			cargo: cargo.descricao,
 			realizacao: treinamentoColaborador.realizacao,
 		})
 		.from(colaborador)
 		.innerJoin(cargoTreinamento, eq(cargoTreinamento.cargo, colaborador.cargo))
+		.innerJoin(cargo, eq(cargoTreinamento.cargo, cargo.id))
 		.innerJoin(treinamento, eq(cargoTreinamento.treinamento, treinamento.id))
 		.leftJoin(
 			treinamentoColaborador,

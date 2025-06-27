@@ -33,7 +33,7 @@ export interface TrainingRowData {
 	trainingDescription: string;
 }
 
-export function DetailCollabTable({ data }: CollabDetailTableProps) {
+export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 	// const allData = [
 	// 	...data.noPrazo,
 	// 	...data.vencido,

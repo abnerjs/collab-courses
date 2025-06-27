@@ -1,4 +1,4 @@
-import { DetailCollabTable } from "@/components/detail-collab-table";
+import { DetailTrainingTable } from "@/components/detail-training-table";
 import { ErrorLoadingMessage } from "@/components/error-loading-message";
 import { Badge } from "@/components/ui/badge";
 import { getCollabDetails } from "@/services/detail-collab";
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/detail-training/$id")({
 								<Badge variant="secondary">{data.cargo}</Badge>
 							</h2>
 						</div>
-						<DetailCollabTable data={data} />
+						<DetailTrainingTable data={data} />
 					</>
 				)}
 			</>

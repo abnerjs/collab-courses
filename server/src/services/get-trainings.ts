@@ -109,7 +109,7 @@ export async function getTrainingById(id: string) {
 			),
 		)
 		.where(eq(treinamento.id, id))
-		.orderBy(desc(colaborador.nome));
+		.orderBy(colaborador.nome);
 
 	const noPrazo = collabs.filter((t) => {
 		if (!t.realizacao) return false;

@@ -63,7 +63,9 @@ export const Route = createFileRoute("/matrix-trainings")({
 					<h1 className="text-2xl font-semibold">Matriz de Treinamentos</h1>
 					<Dialog open={open} onOpenChange={setOpen}>
 						<DialogTrigger asChild>
-							<Button className="ml-auto">Importar matriz</Button>
+							<Button className="ml-auto" disabled={loading}>
+								{loading ? "Importando..." : "Importar matriz"}
+							</Button>
 						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>

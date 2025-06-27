@@ -4,7 +4,7 @@ import { getMatrixTrainings } from "../../services/get-matrix-trainings";
 import { changeTraining } from "../../services/change-trainings";
 import { createTraining } from "../../services/create-trainings";
 import { deleteTrainings } from "../../services/delete-trainings";
-import { getTrainings } from "../../services/get-trainings";
+import { getTrainingById, getTrainings } from "../../services/get-trainings";
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -39,6 +39,30 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 			});
 		},
 	);
+
+	app.get("/trainings/:id", async (request, reply) => {
+		const { id } = request.params as { id: string };
+
+		const { treinamento, noPrazo, vencendo, vencido, naoRealizado } =
+			await getTrainingById(id);
+
+		if (!treinamento) {
+			return reply.status(404).send({ error: "Training not found" });
+		}
+		if (!noPrazo || !vencendo || !vencido || !naoRealizado) {
+			return reply.status(500).send({ error: "Error fetching collabs" });
+		}
+
+		return reply.status(200).send({
+			id: (await treinamento).id,
+			nome: (await treinamento).nome,
+			validade: (await treinamento).validade,
+			noPrazo: noPrazo,
+			vencendo: vencendo,
+			vencido: vencido,
+			naoRealizado: naoRealizado,
+		});
+	});
 
 	app.get(
 		"/matrix-trainings",

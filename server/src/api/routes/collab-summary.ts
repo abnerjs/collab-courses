@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { searchCollaboratorsWithTrainingStatus } from "../../services/search-collaborators";
+import { getCollaborators } from "../../services/get-collaborators";
 
 export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -75,7 +75,7 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 						? setoresHeader
 						: [];
 
-			const result = await searchCollaboratorsWithTrainingStatus({
+			const result = await getCollaborators({
 				nome,
 				setorIds: setores,
 				cargoIds: cargos,

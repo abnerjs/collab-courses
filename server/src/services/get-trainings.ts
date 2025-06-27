@@ -6,6 +6,7 @@ import {
 	treinamento,
 	treinamentoColaborador,
 } from "../db/schema";
+import dayjs from "dayjs";
 
 interface FilterParams {
 	descricao?: string;
@@ -82,4 +83,57 @@ export async function getTrainings({ descricao }: FilterParams) {
 	return response;
 }
 
-export async function getTrainingById(id: string) {}
+export async function getTrainingById(id: string) {
+	const training = await db
+		.select()
+		.from(treinamento)
+		.where(eq(treinamento.id, id))
+		.limit(1)
+		.then((rows) => rows[0]);
+
+	const collabs = await db
+		.select({
+			id: colaborador.id,
+			nome: colaborador.nome,
+			cargo: colaborador.cargo,
+			realizacao: treinamentoColaborador.realizacao,
+		})
+		.from(colaborador)
+		.innerJoin(cargoTreinamento, eq(cargoTreinamento.cargo, colaborador.cargo))
+		.where(eq(cargoTreinamento.treinamento, id))
+		.orderBy(desc(colaborador.nome));
+
+	const noPrazo = collabs.filter((t) => {
+		if (!t.realizacao) return false;
+		const validade = dayjs(t.realizacao).add(training.validade, "day");
+
+		return validade.isAfter(dayjs().add(30, "day").toDate());
+	});
+
+	const vencendo = collabs.filter((t) => {
+		if (!t.realizacao) return false;
+		const validade = dayjs(t.realizacao).add(training.validade, "day");
+
+		return (
+			validade.isAfter(dayjs().toDate()) &&
+			validade.isBefore(dayjs().add(30, "day").toDate())
+		);
+	});
+
+	const vencido = collabs.filter((t) => {
+		if (!t.realizacao) return false;
+		const validade = dayjs(t.realizacao).add(training.validade, "day");
+
+		return validade.isBefore(dayjs().toDate());
+	});
+
+	const naoRealizado = collabs.filter((t) => !t.realizacao);
+
+	return {
+		treinamento: training,
+		noPrazo: noPrazo,
+		vencendo: vencendo,
+		vencido: vencido,
+		naoRealizado: naoRealizado,
+	};
+}

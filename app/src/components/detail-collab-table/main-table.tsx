@@ -7,16 +7,14 @@ import {
 	TableHeader,
 	TableRow,
 } from "../ui/table";
-import { flexRender } from "@tanstack/react-table";
 import { RowActions } from "./row-actions";
-import type { ColumnDef } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
+import type { ColumnDef, useReactTable } from "@tanstack/react-table";
 import type { TreinamentoComplete } from "@/services/detail-collab";
 import type { TrainingRowData } from ".";
 
 interface MainTableProps {
-	table: ReturnType<
-		typeof import("@tanstack/react-table").useReactTable<TreinamentoComplete>
-	>;
+	table: ReturnType<typeof useReactTable<TreinamentoComplete>>;
 	columns: ColumnDef<TreinamentoComplete>[];
 	setRowData: React.Dispatch<React.SetStateAction<TrainingRowData | null>>;
 	setDialogState: React.Dispatch<

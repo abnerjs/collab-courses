@@ -39,6 +39,9 @@ export function AddTrainingDialogContent({
 			queryClient.invalidateQueries({
 				queryKey: ["colaboradores-detail", collaboratorId],
 			});
+			queryClient.invalidateQueries({
+				queryKey: ["treinamentos-detail", trainingId],
+			});
 		},
 		onError: (error) => {
 			console.error("Erro na mutação:", error);

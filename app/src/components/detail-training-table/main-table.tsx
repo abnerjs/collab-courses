@@ -7,18 +7,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "../ui/table";
-import { flexRender } from "@tanstack/react-table";
 import { RowActions } from "./row-actions";
-import type { ColumnDef } from "@tanstack/react-table";
-import type { TreinamentoComplete } from "@/services/detail-collab";
-import type { TrainingRowData } from ".";
+import { flexRender } from "@tanstack/react-table";
+import type { ColumnDef, useReactTable } from "@tanstack/react-table";
+import type { CollabRowData } from ".";
+import type { CollabComplete } from "@/services/detail-trainings";
 
 interface MainTableProps {
-	table: ReturnType<
-		typeof import("@tanstack/react-table").useReactTable<TreinamentoComplete>
-	>;
-	columns: ColumnDef<TreinamentoComplete>[];
-	setRowData: React.Dispatch<React.SetStateAction<TrainingRowData | null>>;
+	table: ReturnType<typeof useReactTable<CollabComplete>>;
+	columns: ColumnDef<CollabComplete>[];
+	setRowData: React.Dispatch<React.SetStateAction<CollabRowData | null>>;
 	setDialogState: React.Dispatch<
 		React.SetStateAction<"add" | "delete" | "deleteAll" | null>
 	>;

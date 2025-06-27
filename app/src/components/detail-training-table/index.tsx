@@ -2,10 +2,6 @@ import * as React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
-import type {
-	CollabDetailResponse,
-	TreinamentoComplete,
-} from "@/services/detail-collab";
 import dayjs from "dayjs";
 import { MainTable } from "./main-table";
 import type {
@@ -23,28 +19,21 @@ import {
 import { Dialog } from "../ui/dialog";
 import { ConfirmDeleteTraining } from "../confirm-delete-training";
 import { AddTrainingDialogContent } from "../add-training-dialog";
+import type {
+	CollabComplete,
+	TrainingDetailResponse,
+} from "@/services/detail-trainings";
 
-interface CollabDetailTableProps {
-	data: CollabDetailResponse;
+interface TrainingDetailTableProps {
+	data: TrainingDetailResponse;
 }
 
-export interface TrainingRowData {
-	trainingId: string;
-	trainingDescription: string;
+export interface CollabRowData {
+	id: string;
+	name: string;
 }
 
-export function DetailTrainingTable({ data }: CollabDetailTableProps) {
-	// const allData = [
-	// 	...data.noPrazo,
-	// 	...data.vencido,
-	// 	...data.vencendo,
-	// 	...data.naoRealizado,
-	// ].sort((a, b) => {
-	// 	if (a.nome < b.nome) return -1;
-	// 	if (a.nome > b.nome) return 1;
-	// 	return 0;
-	// });
-
+export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -53,16 +42,18 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 	const [dialogState, setDialogState] = React.useState<
 		"add" | "delete" | "deleteAll" | null
 	>(null);
-	const [rowData, setRowData] = React.useState<TrainingRowData | null>(null);
+	const [rowData, setRowData] = React.useState<CollabRowData | null>(null);
 
-	const collaboratorId = data.id;
-	const collaboratorName = data.nome;
-
-	const columns: ColumnDef<TreinamentoComplete>[] = [
+	const columns: ColumnDef<CollabComplete>[] = [
 		{
-			accessorKey: "treinamento",
-			header: "Treinamento",
-			cell: ({ row }) => <h1>{row.original.nome}</h1>,
+			accessorKey: "colaborador",
+			header: "Colaborador",
+			cell: ({ row }) => (
+				<div className="flex items-center gap-2">
+					<span>{row.original.nome}</span>
+					<Badge variant="secondary">{row.original.cargo}</Badge>
+				</div>
+			),
 			enableHiding: false,
 		},
 		{
@@ -80,15 +71,9 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 			cell: ({ row }) =>
 				row.original.realizacao
 					? dayjs(row.original.realizacao)
-							.add(row.original.validade, "day")
+							.add(data.validade, "day")
 							.format("DD/MM/YYYY")
 					: "",
-		},
-		{
-			accessorKey: "validade",
-			header: "Validade (dias)",
-			cell: ({ row }) => row.original.validade,
-			enableHiding: false,
 		},
 		{
 			accessorKey: "status",
@@ -96,7 +81,7 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 			cell: ({ row }) =>
 				row.original.realizacao ? (
 					dayjs(row.original.realizacao)
-						.add(row.original.validade, "day")
+						.add(data.validade, "day")
 						.isAfter(dayjs()) ? (
 						dayjs(row.original.realizacao).add(30, "day").isAfter(dayjs()) ? (
 							<Badge
@@ -126,7 +111,7 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 		},
 	];
 
-	const createTable = (data: TreinamentoComplete[]) => {
+	const createTable = (data: CollabComplete[]) => {
 		return useReactTable({
 			data,
 			columns,
@@ -134,7 +119,7 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 				columnVisibility,
 				columnFilters,
 			},
-			getRowId: (row) => row.treinamentoId.toString(),
+			getRowId: (row) => row.id.toString(),
 			onColumnFiltersChange: setColumnFilters,
 			onColumnVisibilityChange: setColumnVisibility,
 			getCoreRowModel: getCoreRowModel(),
@@ -154,7 +139,7 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 		<>
 			<Tabs
 				defaultValue="nao-realizado"
-				className="w-full flex-col justify-start gap-6 flex-1 mb-8"
+				className="w-full flex-col justify-start gap-6 flex-1 min-h-0 mb-8"
 			>
 				<div className="flex items-center justify-between px-4 lg:px-6">
 					<Label htmlFor="view-selector" className="sr-only">
@@ -245,10 +230,10 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 				modal={true}
 			>
 				<AddTrainingDialogContent
-					collaboratorId={collaboratorId || ""}
-					collaboratorName={collaboratorName || ""}
-					trainingId={rowData?.trainingId || ""}
-					trainingDescription={rowData?.trainingDescription || ""}
+					collaboratorId={rowData?.id || ""}
+					collaboratorName={rowData?.name || ""}
+					trainingId={data.id || ""}
+					trainingDescription={data.nome || ""}
 				/>
 			</Dialog>
 			<Dialog
@@ -257,10 +242,10 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 				modal={true}
 			>
 				<ConfirmDeleteTraining
-					collaboratorId={collaboratorId || ""}
-					collaboratorName={collaboratorName || ""}
-					trainingId={rowData?.trainingId || ""}
-					trainingDescription={rowData?.trainingDescription || ""}
+					collaboratorId={rowData?.id || ""}
+					collaboratorName={rowData?.name || ""}
+					trainingId={data.id || ""}
+					trainingDescription={data.nome || ""}
 				/>
 			</Dialog>
 			<Dialog
@@ -269,10 +254,10 @@ export function DetailTrainingTable({ data }: CollabDetailTableProps) {
 				modal={true}
 			>
 				<ConfirmDeleteTraining
-					collaboratorId={collaboratorId || ""}
-					collaboratorName={collaboratorName || ""}
-					trainingId={rowData?.trainingId || ""}
-					trainingDescription={rowData?.trainingDescription || ""}
+					collaboratorId={rowData?.id || ""}
+					collaboratorName={rowData?.name || ""}
+					trainingId={data.id || ""}
+					trainingDescription={data.nome || ""}
 					allTrainings
 				/>
 			</Dialog>

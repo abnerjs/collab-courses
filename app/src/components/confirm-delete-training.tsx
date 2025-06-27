@@ -19,7 +19,7 @@ interface AddTrainingDialogProps {
 }
 
 export function ConfirmDeleteTraining({
-	collaboratorId,
+	collaboratorId: id,
 	collaboratorName,
 	trainingId,
 	trainingDescription,
@@ -31,7 +31,7 @@ export function ConfirmDeleteTraining({
 		mutationFn: deleteTraining,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: ["colaboradores-detail", collaboratorId],
+				queryKey: ["colaboradores-detail", id],
 			});
 		},
 	});
@@ -39,7 +39,7 @@ export function ConfirmDeleteTraining({
 	function handleDelete() {
 		mutation.mutate({
 			treinamentoId: trainingId,
-			colaboradorId: collaboratorId,
+			colaboradorId: id,
 			lastValue: !allTrainings,
 		});
 	}

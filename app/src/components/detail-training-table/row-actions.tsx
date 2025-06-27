@@ -6,34 +6,34 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import type { TreinamentoComplete } from "@/services/detail-collab";
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import type { TrainingRowData } from ".";
+import type { CollabRowData } from ".";
 import type { Row } from "@tanstack/react-table";
+import type { CollabComplete } from "@/services/detail-trainings";
 
 export const RowActions = ({
 	row,
 	setRowData,
 	setDialogState,
 }: {
-	row: Row<TreinamentoComplete>;
-	setRowData: React.Dispatch<React.SetStateAction<TrainingRowData | null>>;
+	row: Row<CollabComplete>;
+	setRowData: React.Dispatch<React.SetStateAction<CollabRowData | null>>;
 	setDialogState: React.Dispatch<
 		React.SetStateAction<"add" | "delete" | "deleteAll" | null>
 	>;
 }) => {
 	const handleDialogOpen = (type: "add" | "delete" | "deleteAll") => {
 		setRowData({
-			trainingId: row.original.treinamentoId,
-			trainingDescription: row.original.nome,
+			id: row.original.id,
+			name: row.original.nome,
 		});
 		setDialogState(type);
 	};
 
 	return (
 		<>
-			<DropdownMenu key={`actions-menu-${row.original.treinamentoId}`}>
+			<DropdownMenu key={`actions-menu-${row.original.id}`}>
 				<DropdownMenuTrigger asChild>
 					<Button
 						variant="secondary"

@@ -100,7 +100,15 @@ export async function getTrainingById(id: string) {
 		})
 		.from(colaborador)
 		.innerJoin(cargoTreinamento, eq(cargoTreinamento.cargo, colaborador.cargo))
-		.where(eq(cargoTreinamento.treinamento, id))
+		.innerJoin(treinamento, eq(cargoTreinamento.treinamento, treinamento.id))
+		.leftJoin(
+			treinamentoColaborador,
+			and(
+				eq(treinamentoColaborador.treinamento, treinamento.id),
+				eq(treinamentoColaborador.colaborador, colaborador.id),
+			),
+		)
+		.where(eq(treinamento.id, id))
 		.orderBy(desc(colaborador.nome));
 
 	const noPrazo = collabs.filter((t) => {

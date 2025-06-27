@@ -64,41 +64,6 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 		});
 	});
 
-	app.get(
-		"/matrix-trainings",
-		{
-			schema: z.object({
-				response: z.object({
-					treinamentos: z.array(
-						z.object({
-							id: z.string(),
-							nome: z.string(),
-						}),
-					),
-					cargos: z.array(
-						z.object({
-							id: z.string(),
-							descricao: z.string(),
-							treinamentos: z.array(
-								z.object({
-									id: z.string(),
-								}),
-							),
-						}),
-					),
-				}),
-			}),
-		},
-		async (_, reply) => {
-			const [cargoMatrix, treinamentos] = await getMatrixTrainings();
-
-			reply.status(200).send({
-				treinamentos: treinamentos,
-				cargos: cargoMatrix,
-			});
-		},
-	);
-
 	app.post(
 		"/trainings/change",
 		{

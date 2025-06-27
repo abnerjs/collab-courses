@@ -11,22 +11,17 @@ import { flexRender } from "@tanstack/react-table";
 import { RowActions } from "./row-actions";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { TreinamentoComplete } from "@/services/detail-collab";
+import type { TrainingRowData } from ".";
 
 interface MainTableProps {
 	table: ReturnType<
 		typeof import("@tanstack/react-table").useReactTable<TreinamentoComplete>
 	>;
 	columns: ColumnDef<TreinamentoComplete>[];
-	dialogState: { type: "add" | "delete" | "deleteAll"; rowId: string } | null;
-	setDialogState: React.Dispatch<
-		React.SetStateAction<{
-			type: "add" | "delete" | "deleteAll";
-			rowId: string;
-		} | null>
-	>;
+	setRowData: React.Dispatch<React.SetStateAction<TrainingRowData | null>>;
 }
 
-export function MainTable({ table, columns }: MainTableProps) {
+export function MainTable({ table, columns, setRowData }: MainTableProps) {
 	return (
 		<div className="flex flex-1 overflow-hidden rounded-lg border">
 			<Table>
@@ -64,7 +59,11 @@ export function MainTable({ table, columns }: MainTableProps) {
 									{row.getVisibleCells().map((cell: any) => (
 										<TableCell key={cell.id}>
 											{cell.column.id === "actions" ? (
-												<RowActions row={row} table={table} />
+												<RowActions
+													row={row}
+													table={table}
+													setRowData={setRowData}
+												/>
 											) : (
 												flexRender(
 													cell.column.columnDef.cell,

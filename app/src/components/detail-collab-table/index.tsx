@@ -20,9 +20,17 @@ import {
 	getFacetedRowModel,
 	getFacetedUniqueValues,
 } from "@tanstack/react-table";
+import { Dialog } from "../ui/dialog";
+import { ConfirmDeleteTraining } from "../confirm-delete-training";
+import { AddTrainingDialogContent } from "../add-training-dialog";
 
 interface CollabDetailTableProps {
 	data: CollabDetailResponse;
+}
+
+export interface TrainingRowData {
+	trainingId: string;
+	trainingDescription: string;
 }
 
 export function DetailCollabTable({ data }: CollabDetailTableProps) {
@@ -31,10 +39,10 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
 		[],
 	);
-	const [dialogState, setDialogState] = React.useState<{
-		type: "add" | "delete" | "deleteAll";
-		rowId: string;
-	} | null>(null);
+	const [dialogState, setDialogState] = React.useState<
+		"add" | "delete" | "deleteAll" | null
+	>(null);
+	const [rowData, setRowData] = React.useState<TrainingRowData | null>(null);
 
 	const collaboratorId = data.id;
 	const collaboratorName = data.nome;
@@ -104,7 +112,6 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 		},
 		{
 			id: "actions",
-			cell: () => null, // RowActions é tratado no MainTable
 		},
 	];
 
@@ -123,10 +130,6 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 			getFilteredRowModel: getFilteredRowModel(),
 			getFacetedRowModel: getFacetedRowModel(),
 			getFacetedUniqueValues: getFacetedUniqueValues(),
-			meta: {
-				collaboratorId,
-				collaboratorName,
-			},
 		});
 	};
 
@@ -148,104 +151,129 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 	);
 
 	return (
-		<Tabs
-			defaultValue="pertinentes"
-			className="w-full flex-col justify-start gap-6 flex-1 mb-8"
-		>
-			<div className="flex items-center justify-between px-4 lg:px-6">
-				<Label htmlFor="view-selector" className="sr-only">
-					View
-				</Label>
-				<TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
-					<TabsTrigger value="pertinentes">
-						Todos treinamentos pertinentes
-						<Badge variant="secondary">
-							{data.noPrazo.length +
-								data.vencendo.length +
-								data.vencido.length +
-								data.naoRealizado.length}
-						</Badge>
-					</TabsTrigger>
-					<TabsTrigger value="no-prazo">
-						No Prazo <Badge variant="secondary">{data.noPrazo.length}</Badge>
-					</TabsTrigger>
-					<TabsTrigger value="vencendo">
-						Vencendo <Badge variant="secondary">{data.vencendo.length}</Badge>
-					</TabsTrigger>
-					<TabsTrigger value="vencido">
-						Vencido <Badge variant="secondary">{data.vencido.length}</Badge>
-					</TabsTrigger>
-					<TabsTrigger value="nao-realizado">
-						Não Realizado
-						<Badge variant="secondary">{data.naoRealizado.length}</Badge>
-					</TabsTrigger>
-				</TabsList>
-			</div>
-			<TabsContent
-				value="pertinentes"
-				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+		<>
+			<Tabs
+				defaultValue="pertinentes"
+				className="w-full flex-col justify-start gap-6 flex-1 mb-8"
 			>
-				<MainTable
-					table={tableTodos}
-					columns={columns}
-					dialogState={dialogState}
-					setDialogState={setDialogState}
-				/>
-			</TabsContent>
-			<TabsContent
-				value="no-prazo"
-				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+				<div className="flex items-center justify-between px-4 lg:px-6">
+					<Label htmlFor="view-selector" className="sr-only">
+						View
+					</Label>
+					<TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
+						<TabsTrigger value="pertinentes">
+							Todos treinamentos pertinentes
+							<Badge variant="secondary">
+								{data.noPrazo.length +
+									data.vencendo.length +
+									data.vencido.length +
+									data.naoRealizado.length}
+							</Badge>
+						</TabsTrigger>
+						<TabsTrigger value="no-prazo">
+							No Prazo <Badge variant="secondary">{data.noPrazo.length}</Badge>
+						</TabsTrigger>
+						<TabsTrigger value="vencendo">
+							Vencendo <Badge variant="secondary">{data.vencendo.length}</Badge>
+						</TabsTrigger>
+						<TabsTrigger value="vencido">
+							Vencido <Badge variant="secondary">{data.vencido.length}</Badge>
+						</TabsTrigger>
+						<TabsTrigger value="nao-realizado">
+							Não Realizado
+							<Badge variant="secondary">{data.naoRealizado.length}</Badge>
+						</TabsTrigger>
+					</TabsList>
+				</div>
+				<TabsContent
+					value="pertinentes"
+					className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+				>
+					<MainTable
+						table={tableTodos}
+						columns={columns}
+						setRowData={setRowData}
+					/>
+				</TabsContent>
+				<TabsContent
+					value="no-prazo"
+					className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+				>
+					<MainTable
+						table={tableNoPrazo}
+						columns={columns}
+						setRowData={setRowData}
+					/>
+				</TabsContent>
+				<TabsContent
+					value="vencendo"
+					className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+				>
+					<MainTable
+						table={tableVencendo}
+						columns={columns}
+						setRowData={setRowData}
+					/>
+				</TabsContent>
+				<TabsContent
+					value="vencido"
+					className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+				>
+					<MainTable
+						table={tableVencido}
+						columns={columns}
+						setRowData={setRowData}
+					/>
+				</TabsContent>
+				<TabsContent
+					value="nao-realizado"
+					className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+				>
+					<MainTable
+						table={tableNaoRealizado}
+						columns={columns}
+						setRowData={setRowData}
+					/>
+				</TabsContent>
+			</Tabs>
+
+			<Dialog
+				open={dialogState === "add"}
+				onOpenChange={(open) => setDialogState(open ? "add" : null)}
+				modal={true}
 			>
-				<MainTable
-					table={tableNoPrazo}
-					columns={columns}
-					dialogState={dialogState}
-					setDialogState={setDialogState}
+				<AddTrainingDialogContent
+					collaboratorId={collaboratorId || ""}
+					collaboratorName={collaboratorName || ""}
+					trainingId={rowData?.trainingId || ""}
+					trainingDescription={rowData?.trainingDescription || ""}
 				/>
-			</TabsContent>
-			<TabsContent
-				value="vencendo"
-				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+			</Dialog>
+			<Dialog
+				open={dialogState === "delete"}
+				onOpenChange={(open) => setDialogState(open ? "delete" : null)}
+				modal={true}
 			>
-				<MainTable
-					table={tableVencendo}
-					columns={columns}
-					dialogState={dialogState}
-					setDialogState={setDialogState}
+				<ConfirmDeleteTraining
+					collaboratorId={collaboratorId || ""}
+					collaboratorName={collaboratorName || ""}
+					trainingId={rowData?.trainingId || ""}
+					trainingDescription={rowData?.trainingDescription || ""}
 				/>
-			</TabsContent>
-			<TabsContent
-				value="vencido"
-				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+			</Dialog>
+			<Dialog
+				open={dialogState === "deleteAll"}
+				onOpenChange={(open) => setDialogState(open ? "deleteAll" : null)}
+				modal={true}
 			>
-				<MainTable
-					table={tableVencido}
-					columns={columns}
-					dialogState={dialogState}
-					setDialogState={setDialogState}
+				<ConfirmDeleteTraining
+					collaboratorId={collaboratorId || ""}
+					collaboratorName={collaboratorName || ""}
+					trainingId={rowData?.trainingId || ""}
+					trainingDescription={rowData?.trainingDescription || ""}
+					allTrainings
 				/>
-			</TabsContent>
-			<TabsContent
-				value="nao-realizado"
-				className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
-			>
-				<MainTable
-					table={tableNaoRealizado}
-					columns={columns}
-					dialogState={dialogState}
-					setDialogState={setDialogState}
-				/>
-			</TabsContent>
-		</Tabs>
+			</Dialog>
+		</>
 	);
-}
-
-// Tipos customizados para meta do react-table
-export type CustomTableMeta = {
-	collaboratorId: string;
-	collaboratorName: string;
-};
-
-declare module "@tanstack/react-table" {
-	interface TableMeta<TData> extends CustomTableMeta {}
 }

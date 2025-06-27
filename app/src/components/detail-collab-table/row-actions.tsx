@@ -12,13 +12,17 @@ import { ConfirmDeleteTraining } from "../confirm-delete-training";
 import type { TreinamentoComplete } from "@/services/detail-collab";
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import type { TrainingRowData } from ".";
+import type { Row, Table } from "@tanstack/react-table";
 
 export const RowActions = ({
 	row,
 	table,
+	setRowData,
 }: {
-	row: import("@tanstack/react-table").Row<TreinamentoComplete>;
-	table: import("@tanstack/react-table").Table<TreinamentoComplete>;
+	row: Row<TreinamentoComplete>;
+	table: Table<TreinamentoComplete>;
+	setRowData: React.Dispatch<React.SetStateAction<TrainingRowData | null>>;
 }) => {
 	const [isNewTrainingDialogOpen, setIsNewTrainingDialogOpen] =
 		React.useState(false);

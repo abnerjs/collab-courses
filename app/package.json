@@ -48,6 +48,7 @@
 		"@iconify/react": "^6.0.0",
 		"@tanstack/eslint-plugin-query": "^5.78.0",
 		"@tanstack/router-plugin": "^1.121.34",
+		"@types/node": "^24.0.4",
 		"@types/react": "^19.1.2",
 		"@types/react-dom": "^19.1.2",
 		"@types/react-virtualized": "^9.22.2",

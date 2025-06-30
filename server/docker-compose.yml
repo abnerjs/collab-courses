@@ -1,5 +1,3 @@
-name: collab-courses
-
 services:
   pg:
     image: bitnami/postgresql:17.5.0

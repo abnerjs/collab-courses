@@ -39,12 +39,10 @@ export function MatrixTrainings({ data }: MatrixProps) {
 	) => {
 		const response = await changeTrainings(treinamentoId, cargoId, status);
 		if (!response.success) {
-			queryClient.setQueryData(
-				["matriz-treinamentos"],
-				(oldData?: TrainingsResponse) => {
-					if (oldData) return oldData;
-				},
-			);
+			queryClient.invalidateQueries({
+				queryKey: ["matrix-trainings"],
+			});
+			return;
 		}
 	};
 
@@ -134,7 +132,7 @@ export function MatrixTrainings({ data }: MatrixProps) {
 													>
 														<input
 															type="checkbox"
-															checked={status}
+															defaultChecked={status}
 															onChange={() =>
 																handleChangeStatus(
 																	treinamento.id,

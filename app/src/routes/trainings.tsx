@@ -39,7 +39,6 @@ function RouteComponent() {
 			getTrainings({
 				queryKey: ["treinamentos", { descricao: queryKey[1] as string }],
 			}),
-		staleTime: 1000 * 60 * 5,
 	});
 
 	return (

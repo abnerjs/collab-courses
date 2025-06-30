@@ -57,7 +57,7 @@ export async function importMatrix(fileBuffer: Buffer) {
 		// Cadastrar novos treinamentos
 		for (const nome of uniqueTrainings) {
 			if (!dbTrainings.find((t) => t.nome === nome)) {
-				await db.insert(treinamento).values({ nome, validade: 0 }); // validade default 0
+				await db.insert(treinamento).values({ nome, validade: 365 }); // validade default 0
 			}
 		}
 		// Buscar ou criar setor "Geral"

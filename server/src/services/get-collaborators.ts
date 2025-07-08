@@ -100,6 +100,12 @@ export async function getCollaborators({
 			and(
 				eq(treinamentoColaborador.colaborador, colaborador.id),
 				eq(treinamentoColaborador.treinamento, treinamento.id),
+				sql`(${treinamentoColaborador.realizacao}) = (
+					SELECT MAX(tc2.realizacao)
+					FROM ${treinamentoColaborador} as tc2
+					WHERE tc2.colaborador = ${colaborador.id}
+					AND tc2.treinamento = ${treinamento.id}
+				)`,
 			),
 		)
 		.where(where)
@@ -156,6 +162,12 @@ export async function getCollaboratorsById(id: string) {
 			and(
 				eq(treinamentoColaborador.colaborador, id),
 				eq(treinamentoColaborador.treinamento, requiredTrainings.treinamentoId),
+				sql`(${treinamentoColaborador.realizacao}) = (
+								SELECT MAX(tc2.realizacao)
+								FROM ${treinamentoColaborador} as tc2
+								WHERE tc2.colaborador = ${treinamentoColaborador.colaborador}
+								AND tc2.treinamento = ${treinamentoColaborador.treinamento}
+							)`,
 			),
 		);
 

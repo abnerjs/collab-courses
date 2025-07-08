@@ -75,6 +75,12 @@ export async function getTrainings({ descricao }: FilterParams) {
 			and(
 				eq(treinamentoColaborador.treinamento, treinamento.id),
 				eq(treinamentoColaborador.colaborador, colaborador.id),
+				sql`(${treinamentoColaborador.realizacao}) = (
+												SELECT MAX(tc2.realizacao)
+												FROM ${treinamentoColaborador} as tc2
+												WHERE tc2.colaborador = ${colaborador.id}
+												AND tc2.treinamento = ${treinamento.id}
+											)`,
 			),
 		)
 		.where(where)

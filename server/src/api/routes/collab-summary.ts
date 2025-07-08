@@ -75,13 +75,20 @@ export const CollabSummaryRoute: FastifyPluginAsyncZod = async (app) => {
 						? setoresHeader
 						: [];
 
-			const result = await getCollaborators({
-				nome,
-				setorIds: setores,
-				cargoIds: cargos,
-				statuses: statuses,
-			});
-			return reply.status(200).send(result);
+			try {
+				const result = await getCollaborators({
+					nome,
+					setorIds: setores,
+					cargoIds: cargos,
+					statuses: statuses,
+				});
+				return reply.status(200).send(result);
+			} catch (error) {
+				console.error("Error fetching collaborators:", error);
+				return reply.status(500).send({
+					error: "Internal Server Error",
+				});
+			}
 		},
 	);
 };

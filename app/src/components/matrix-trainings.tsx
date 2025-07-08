@@ -9,23 +9,6 @@ import {
 	MultiGrid,
 } from "react-virtualized";
 
-const STYLE = {
-	border: "1px solid #ddd",
-};
-const STYLE_BOTTOM_LEFT_GRID = {
-	borderRight: "2px solid #aaa",
-	backgroundColor: "#f7f7f7",
-};
-const STYLE_TOP_LEFT_GRID = {
-	borderBottom: "2px solid #aaa",
-	borderRight: "2px solid #aaa",
-	fontWeight: "bold",
-};
-const STYLE_TOP_RIGHT_GRID = {
-	borderBottom: "2px solid #aaa",
-	fontWeight: "bold",
-};
-
 interface MatrixProps {
 	data: TrainingsResponse;
 }
@@ -59,8 +42,8 @@ export function MatrixTrainings({ data }: MatrixProps) {
 
 	return (
 		<div className="w-full flex flex-1">
-			<div className="flex flex-1 border rounded-lg">
-				<AutoSizer className="rounded-lg">
+			<div className="flex flex-1 border rounded-xl overflow-hidden">
+				<AutoSizer className="rounded-xl">
 					{({ width, height }) => (
 						<MultiGrid
 							fixedColumnCount={1}
@@ -76,7 +59,7 @@ export function MatrixTrainings({ data }: MatrixProps) {
 										rowIndex={rowIndex}
 									>
 										{({ measure, registerChild }) => {
-											const cellClass = `border border-zinc-200 bg-white px-2 py-1 box-border${
+											const cellClass = `border border-zinc-100 hover:border-zinc-300 bg-white px-2 py-1 box-border${
 												rowIndex === 0 || columnIndex === 0
 													? " font-bold bg-zinc-50"
 													: ""
@@ -87,7 +70,7 @@ export function MatrixTrainings({ data }: MatrixProps) {
 														ref={registerChild}
 														style={style}
 														onLoad={measure}
-														className={cellClass}
+														className={`${cellClass} border-t-0 border-l-0`}
 													>
 														<b>Cargo</b>
 													</div>
@@ -99,7 +82,7 @@ export function MatrixTrainings({ data }: MatrixProps) {
 														ref={registerChild}
 														style={style}
 														onLoad={measure}
-														className={`${cellClass} whitespace-nowrap`}
+														className={`${cellClass} border-t-0 whitespace-nowrap`}
 													>
 														<b>{data.treinamentos[columnIndex - 1].nome}</b>
 													</div>
@@ -111,7 +94,7 @@ export function MatrixTrainings({ data }: MatrixProps) {
 														ref={registerChild}
 														style={style}
 														onLoad={measure}
-														className={`${cellClass} whitespace-nowrap`}
+														className={`${cellClass} border-l-0 whitespace-nowrap`}
 													>
 														{data.cargos[rowIndex - 1].descricao}
 													</div>
@@ -155,13 +138,8 @@ export function MatrixTrainings({ data }: MatrixProps) {
 							enableFixedColumnScroll
 							enableFixedRowScroll
 							height={height}
-							rowHeight={40}
+							rowHeight={32}
 							rowCount={rowCount}
-							style={{}}
-							styleBottomRightGrid={{ ...STYLE }}
-							styleBottomLeftGrid={STYLE_BOTTOM_LEFT_GRID}
-							styleTopLeftGrid={STYLE_TOP_LEFT_GRID}
-							styleTopRightGrid={STYLE_TOP_RIGHT_GRID}
 							width={width}
 							hideTopRightGridScrollbar
 							hideBottomLeftGridScrollbar

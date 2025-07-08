@@ -60,9 +60,7 @@ export function MatrixTrainings({ data }: MatrixProps) {
 									>
 										{({ measure, registerChild }) => {
 											const cellClass = `border border-zinc-100 hover:border-zinc-300 bg-white px-2 py-1 box-border${
-												rowIndex === 0 || columnIndex === 0
-													? " font-bold bg-zinc-50"
-													: ""
+												rowIndex === 0 || columnIndex === 0 ? " bg-zinc-50" : ""
 											}`;
 											if (rowIndex === 0 && columnIndex === 0) {
 												return (

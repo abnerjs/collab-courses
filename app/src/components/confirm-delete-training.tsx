@@ -33,6 +33,9 @@ export function ConfirmDeleteTraining({
 			queryClient.invalidateQueries({
 				queryKey: ["colaboradores-detail", id],
 			});
+			queryClient.invalidateQueries({
+				queryKey: ["treinamentos-detail", trainingId],
+			});
 		},
 	});
 

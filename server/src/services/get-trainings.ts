@@ -108,10 +108,16 @@ export async function getTrainingById(id: string) {
 			and(
 				eq(treinamentoColaborador.treinamento, treinamento.id),
 				eq(treinamentoColaborador.colaborador, colaborador.id),
+				sql`(${treinamentoColaborador.realizacao}) = (
+				SELECT MAX(tc2.realizacao)
+				FROM ${treinamentoColaborador} as tc2
+				WHERE tc2.colaborador = ${colaborador.id}
+				AND tc2.treinamento = ${treinamento.id}
+			)`,
 			),
 		)
 		.where(eq(treinamento.id, id))
-		.orderBy(colaborador.nome);
+		.orderBy(colaborador.nome, desc(treinamentoColaborador.realizacao));
 
 	const noPrazo = collabs.filter((t) => {
 		if (!t.realizacao) return false;

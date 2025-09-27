@@ -1,16 +1,16 @@
-import type * as React from "react";
+import type { CollabComplete } from "@/services/detail-trainings"
+import { Icon } from "@iconify/react/dist/iconify.js"
+import type { Row } from "@tanstack/react-table"
+import type * as React from "react"
+import type { CollabRowData } from "."
+import { Button } from "../ui/button"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import type { CollabRowData } from ".";
-import type { Row } from "@tanstack/react-table";
-import type { CollabComplete } from "@/services/detail-trainings";
+} from "../ui/dropdown-menu"
 
 export const RowActions = ({
 	row,
@@ -26,7 +26,7 @@ export const RowActions = ({
 	const handleDialogOpen = (type: "add" | "delete" | "deleteAll") => {
 		setRowData({
 			id: row.original.id,
-			name: row.original.nome,
+			description: row.original.nome,
 		});
 		setDialogState(type);
 	};

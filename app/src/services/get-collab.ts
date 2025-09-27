@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { env } from "@/env"
 
 interface CollabSummaryRequest {
 	nome?: string;
@@ -25,8 +25,14 @@ export const getCollabSummary = async ({
 };
 
 export type CollabSummaryResponse = {
-	data: {
-		id: string;
+	data: CollabSummaryDataResponse[];
+	meta: {
+		total: number;
+	};
+};
+
+export type CollabSummaryDataResponse = {
+	id: string;
 		nomeColaborador: string;
 		cargo: string;
 		setor: string;
@@ -34,8 +40,4 @@ export type CollabSummaryResponse = {
 		vencendo: number;
 		vencido: number;
 		naoRealizado: number;
-	}[];
-	meta: {
-		total: number;
-	};
-};
+}

@@ -1,22 +1,31 @@
-import { env } from "@/env";
+import { env } from "@/env"
 
 export const getCollabDetails = async (
 	id: string,
 ): Promise<CollabDetailResponse> => {
 	const response = await fetch(`${env.VITE_API_URL}/collaborators/${id}`);
 	const data = await response.json();
-	return data;
+	return data.data;
 };
 
 export interface CollabDetailResponse {
 	id: string;
 	nome: string;
-	cargo: string;
-	setor: string;
+	cargo: Cargo;
 	noPrazo: TreinamentoComplete[];
 	vencendo: TreinamentoComplete[];
 	vencido: TreinamentoComplete[];
 	naoRealizado: TreinamentoComplete[];
+}
+export interface Cargo {
+  id: string
+  descricao: string
+  setor: Setor
+}
+
+export interface Setor {
+  id: string
+  descricao: string
 }
 
 export interface TreinamentoComplete {

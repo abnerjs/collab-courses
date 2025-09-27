@@ -1,49 +1,39 @@
-import * as React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Label } from "../ui/label";
-import { Badge } from "../ui/badge";
 import type {
 	CollabDetailResponse,
 	TreinamentoComplete,
-} from "@/services/detail-collab";
-import dayjs from "dayjs";
-import { MainTable } from "./main-table";
+} from "@/services/detail-collab"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
 	VisibilityState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 import {
-	useReactTable,
 	getCoreRowModel,
-	getFilteredRowModel,
 	getFacetedRowModel,
 	getFacetedUniqueValues,
-} from "@tanstack/react-table";
-import { Dialog } from "../ui/dialog";
-import { ConfirmDeleteTraining } from "../confirm-delete-training";
-import { AddTrainingDialogContent } from "../add-training-dialog";
+	getFilteredRowModel,
+	useReactTable,
+} from "@tanstack/react-table"
+import dayjs from "dayjs"
+import * as React from "react"
+import { AddTrainingDialogContent } from "../add-training-dialog"
+import { ConfirmDeleteTraining } from "../confirm-delete-training"
+import { Badge } from "../ui/badge"
+import { Dialog } from "../ui/dialog"
+import { Label } from "../ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { MainTable } from "./main-table"
 
 interface CollabDetailTableProps {
 	data: CollabDetailResponse;
 }
 
 export interface TrainingRowData {
-	trainingId: string;
-	trainingDescription: string;
+	id: string;
+	description: string;
 }
 
 export function DetailCollabTable({ data }: CollabDetailTableProps) {
-	// const allData = [
-	// 	...data.noPrazo,
-	// 	...data.vencido,
-	// 	...data.vencendo,
-	// 	...data.naoRealizado,
-	// ].sort((a, b) => {
-	// 	if (a.nome < b.nome) return -1;
-	// 	if (a.nome > b.nome) return 1;
-	// 	return 0;
-	// });
 
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({});
@@ -94,32 +84,52 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 			accessorKey: "status",
 			header: "Status",
 			cell: ({ row }) =>
-				row.original.realizacao ? (
-					dayjs(row.original.realizacao)
-						.add(row.original.validade, "day")
-						.isAfter(dayjs()) ? (
-						dayjs(row.original.realizacao).add(30, "day").isAfter(dayjs()) ? (
-							<Badge
-								variant="secondary"
-								className="text-zinc-950 bg-emerald-200"
-							>
-								No prazo
+			{
+				const realizacao = row.original.realizacao;
+				const vencimento = realizacao
+					? dayjs(realizacao).add(row.original.validade, "day")
+					: null;
+				const hoje = dayjs();
+				const trintaDiasAntesVencimento = vencimento
+					? vencimento.subtract(30, "day")
+					: null;
+
+				if (realizacao) {
+					if (vencimento && vencimento.isAfter(hoje)) {
+						if (
+							trintaDiasAntesVencimento &&
+							trintaDiasAntesVencimento.isAfter(hoje)
+						) {
+							return (
+								<Badge
+									variant="secondary"
+									className="text-zinc-950 bg-emerald-200"
+								>
+									No prazo
+								</Badge>
+							);
+						} else {
+							return (
+								<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
+									Vencendo
+								</Badge>
+							);
+						}
+					} else {
+						return (
+							<Badge variant="secondary" className="text-zinc-950 bg-red-200">
+								Vencido
 							</Badge>
-						) : (
-							<Badge variant="secondary" className="text-zinc-950 bg-amber-200">
-								Vencendo
-							</Badge>
-						)
-					) : (
-						<Badge variant="secondary" className="text-zinc-950 bg-red-200">
-							Vencido
+						);
+					}
+				} else {
+					return (
+						<Badge variant="secondary" className="text-zinc-950 bg-zinc-200">
+							Não realizado
 						</Badge>
-					)
-				) : (
-					<Badge variant="secondary" className="text-zinc-950 bg-zinc-200">
-						Não realizado
-					</Badge>
-				),
+					);
+				}
+			}
 		},
 		{
 			id: "actions",
@@ -247,8 +257,8 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 				<AddTrainingDialogContent
 					collaboratorId={collaboratorId || ""}
 					collaboratorName={collaboratorName || ""}
-					trainingId={rowData?.trainingId || ""}
-					trainingDescription={rowData?.trainingDescription || ""}
+					trainingId={rowData?.id || ""}
+					trainingDescription={rowData?.description || ""}
 				/>
 			</Dialog>
 			<Dialog
@@ -259,8 +269,8 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 				<ConfirmDeleteTraining
 					collaboratorId={collaboratorId || ""}
 					collaboratorName={collaboratorName || ""}
-					trainingId={rowData?.trainingId || ""}
-					trainingDescription={rowData?.trainingDescription || ""}
+					trainingId={rowData?.id || ""}
+					trainingDescription={rowData?.description || ""}
 				/>
 			</Dialog>
 			<Dialog
@@ -271,8 +281,8 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 				<ConfirmDeleteTraining
 					collaboratorId={collaboratorId || ""}
 					collaboratorName={collaboratorName || ""}
-					trainingId={rowData?.trainingId || ""}
-					trainingDescription={rowData?.trainingDescription || ""}
+					trainingId={rowData?.id || ""}
+					trainingDescription={rowData?.description || ""}
 					allTrainings
 				/>
 			</Dialog>

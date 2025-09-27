@@ -1,16 +1,16 @@
-import type * as React from "react";
+import type { TreinamentoComplete } from "@/services/detail-collab"
+import { Icon } from "@iconify/react/dist/iconify.js"
+import type { Row } from "@tanstack/react-table"
+import type * as React from "react"
+import type { TrainingRowData } from "."
+import { Button } from "../ui/button"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import type { TreinamentoComplete } from "@/services/detail-collab";
-import { Button } from "../ui/button";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import type { TrainingRowData } from ".";
-import type { Row } from "@tanstack/react-table";
+} from "../ui/dropdown-menu"
 
 export const RowActions = ({
 	row,
@@ -25,8 +25,8 @@ export const RowActions = ({
 }) => {
 	const handleDialogOpen = (type: "add" | "delete" | "deleteAll") => {
 		setRowData({
-			trainingId: row.original.treinamentoId,
-			trainingDescription: row.original.nome,
+			id: row.original.treinamentoId,
+			description: row.original.nome,
 		});
 		setDialogState(type);
 	};

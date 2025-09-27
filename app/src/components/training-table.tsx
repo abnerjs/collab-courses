@@ -5,7 +5,7 @@ import {
 	getFilteredRowModel,
 	getSortedRowModel,
 	useReactTable,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
 import {
 	Table,
@@ -14,21 +14,54 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link } from "@tanstack/react-router";
+} from "@/components/ui/table"
 import type {
 	TrainingOverviewResponse,
 	TreinamentoOverview,
-} from "@/services/get-trainings";
+} from "@/services/get-trainings"
+import { Icon } from "@iconify/react/dist/iconify.js"
+import { Link } from "@tanstack/react-router"
+import * as React from "react"
+import { DeleteTrainingDialog } from "./delete-training-dialog"
+import { EditTrainingDialog } from "./edit-training-dialog"
+import { Badge } from "./ui/badge"
+import { Button } from "./ui/button"
+import { Dialog } from "./ui/dialog"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 
 interface TrainingTableProps {
 	data?: TrainingOverviewResponse;
 }
 
+interface TrainingRowData {
+	id: string;
+	name: string;
+	validade: number;
+}
+
 export function TrainingTable({ data }: TrainingTableProps) {
+	const [dialogState, setDialogState] = React.useState<
+		"edit" | "delete" | null
+	>(null);
+	const [rowData, setRowData] = React.useState<TrainingRowData | null>(null);
+
+	const handleDialogOpen = (
+		type: "edit" | "delete",
+		training: TreinamentoOverview
+	) => {
+		setRowData({
+			id: training.id,
+			name: training.nome,
+			validade: training.validade,
+		});
+		setDialogState(type);
+	};
 	const columns: ColumnDef<TreinamentoOverview>[] = [
 		{
 			accessorKey: "nome",
@@ -102,6 +135,30 @@ export function TrainingTable({ data }: TrainingTableProps) {
 			header: "Ações",
 			cell: ({ row }) => (
 				<div className="flex items-center gap-2">
+					<DropdownMenu key={`actions-menu-${row.original.id}`}>
+						<DropdownMenuTrigger asChild>
+							<Button
+								variant="secondary"
+								className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+								size="icon"
+							>
+								<Icon icon="fluent:more-16-regular" width={16} height={16} />
+								<span className="sr-only">Abrir menu</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-32">
+							<DropdownMenuItem onClick={() => handleDialogOpen("edit", row.original)}>
+								Editar
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								variant="destructive"
+								onClick={() => handleDialogOpen("delete", row.original)}
+							>
+								Excluir
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 					<Link to="/detail-training/$id" params={{ id: row.original.id }}>
 						<Button variant="secondary" size="sm">
 							<Icon icon="fluent:eye-16-regular" width={16} height={16} />
@@ -121,49 +178,74 @@ export function TrainingTable({ data }: TrainingTableProps) {
 	});
 
 	return (
-		<div className="rounded-md border flex-1 overflow-auto flex max-h-[calc(100dvh-180px)]">
-			<Table className="pt-20 overflow-auto">
-				<TableHeader className="sticky top-0 bg-white z-10">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header) => {
-								return (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</TableHead>
-								);
-							})}
-						</TableRow>
-					))}
-				</TableHeader>
-				<TableBody>
-					{table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row) => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-							>
-								{row.getVisibleCells().map((cell) => (
-									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</TableCell>
-								))}
+		<>
+			<div className="rounded-md border flex-1 overflow-auto flex max-h-[calc(100dvh-180px)]">
+				<Table className="pt-20 overflow-auto">
+					<TableHeader className="sticky top-0 bg-white z-10">
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									return (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
-						))
-					) : (
-						<TableRow>
-							<TableCell colSpan={columns.length} className="h-24 text-center">
-								Nenhum resultado encontrado.
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
-		</div>
+						))}
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows?.length ? (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() && "selected"}
+								>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell colSpan={columns.length} className="h-24 text-center">
+									Nenhum resultado encontrado.
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			</div>
+
+			<Dialog
+				open={dialogState === "edit"}
+				onOpenChange={(open) => setDialogState(open ? "edit" : null)}
+				modal={true}
+			>
+				<EditTrainingDialog
+					trainingId={rowData?.id || ""}
+					trainingName={rowData?.name || ""}
+					trainingValidade={rowData?.validade || 0}
+				/>
+			</Dialog>
+
+			<Dialog
+				open={dialogState === "delete"}
+				onOpenChange={(open) => setDialogState(open ? "delete" : null)}
+				modal={true}
+			>
+				<DeleteTrainingDialog
+					trainingId={rowData?.id || ""}
+					trainingName={rowData?.name || ""}
+				/>
+			</Dialog>
+		</>
 	);
 }

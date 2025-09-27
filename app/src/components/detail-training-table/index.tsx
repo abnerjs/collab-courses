@@ -1,28 +1,28 @@
-import * as React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Label } from "../ui/label";
-import { Badge } from "../ui/badge";
-import dayjs from "dayjs";
-import { MainTable } from "./main-table";
+import type {
+	CollabComplete,
+	TrainingDetailResponse,
+} from "@/services/detail-trainings"
 import type {
 	ColumnDef,
 	ColumnFiltersState,
 	VisibilityState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 import {
-	useReactTable,
 	getCoreRowModel,
-	getFilteredRowModel,
 	getFacetedRowModel,
 	getFacetedUniqueValues,
-} from "@tanstack/react-table";
-import { Dialog } from "../ui/dialog";
-import { ConfirmDeleteTraining } from "../confirm-delete-training";
-import { AddTrainingDialogContent } from "../add-training-dialog";
-import type {
-	CollabComplete,
-	TrainingDetailResponse,
-} from "@/services/detail-trainings";
+	getFilteredRowModel,
+	useReactTable,
+} from "@tanstack/react-table"
+import dayjs from "dayjs"
+import * as React from "react"
+import { AddTrainingDialogContent } from "../add-training-dialog"
+import { ConfirmDeleteTraining } from "../confirm-delete-training"
+import { Badge } from "../ui/badge"
+import { Dialog } from "../ui/dialog"
+import { Label } from "../ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { MainTable } from "./main-table"
 
 interface TrainingDetailTableProps {
 	data: TrainingDetailResponse;
@@ -30,7 +30,7 @@ interface TrainingDetailTableProps {
 
 export interface CollabRowData {
 	id: string;
-	name: string;
+	description: string;
 }
 
 export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
@@ -231,7 +231,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 			>
 				<AddTrainingDialogContent
 					collaboratorId={rowData?.id || ""}
-					collaboratorName={rowData?.name || ""}
+					collaboratorName={rowData?.description || ""}
 					trainingId={data.id || ""}
 					trainingDescription={data.nome || ""}
 				/>
@@ -243,7 +243,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 			>
 				<ConfirmDeleteTraining
 					collaboratorId={rowData?.id || ""}
-					collaboratorName={rowData?.name || ""}
+					collaboratorName={rowData?.description || ""}
 					trainingId={data.id || ""}
 					trainingDescription={data.nome || ""}
 				/>
@@ -255,7 +255,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 			>
 				<ConfirmDeleteTraining
 					collaboratorId={rowData?.id || ""}
-					collaboratorName={rowData?.name || ""}
+					collaboratorName={rowData?.description || ""}
 					trainingId={data.id || ""}
 					trainingDescription={data.nome || ""}
 					allTrainings

@@ -1,10 +1,13 @@
-import { CollabTable } from "@/components/collab-table";
-import { ErrorLoadingMessage } from "@/components/error-loading-message";
-import { Input } from "@/components/ui/input";
-import { getCollabSummary } from "@/services/get-collab";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useState, type ChangeEvent } from "react";
+import { AddCollabDialog } from "@/components/add-collab-dialog"
+import { CollabTable } from "@/components/collab-table"
+import { ErrorLoadingMessage } from "@/components/error-loading-message"
+import { Button } from "@/components/ui/button"
+import { Dialog } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { getCollabSummary } from "@/services/get-collab"
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
+import { useState, type ChangeEvent } from "react"
 
 export const Route = createFileRoute("/")({
 	component: function Index() {
@@ -16,6 +19,8 @@ export const Route = createFileRoute("/")({
 
 			return "";
 		});
+
+		const [addDialogOpen, setAddDialogOpen] = useState(false);
 
 		function setCurrentSearch(event: ChangeEvent<HTMLInputElement>) {
 			const url = new URL(window.location.toString());
@@ -41,14 +46,21 @@ export const Route = createFileRoute("/")({
 
 		return (
 			<div className="w-full px-8 mb-8 flex-1 flex flex-col">
-				<div className="flex items-center py-4 gap-4">
-					<h1 className="text-2xl font-semibold">Colaboradores</h1>
-					<Input
-						placeholder="Buscar por nome..."
-						value={search}
-						onChange={setCurrentSearch}
-						className="max-w-sm"
-					/>
+				<div className="flex items-center justify-between">
+					<div className="flex items-center py-4 gap-4">
+						<h1 className="text-2xl font-semibold">Colaboradores</h1>
+						<Input
+							placeholder="Buscar por nome..."
+							value={search}
+							onChange={setCurrentSearch}
+							className="max-w-sm"
+						/>
+					</div>
+					<div className="flex items-center gap-4">
+						<Button onClick={() => setAddDialogOpen(true)}>
+							Adicionar Colaborador
+						</Button>
+					</div>
 				</div>
 				{isLoading && !data && (
 					<ErrorLoadingMessage message="Carregando colaboradores..." />
@@ -57,6 +69,10 @@ export const Route = createFileRoute("/")({
 					<ErrorLoadingMessage message="Erro ao carregar colaboradores." />
 				)}
 				{!isLoading && !!data && <CollabTable data={data} />}
+
+				<Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen} modal={true}>
+					<AddCollabDialog />
+				</Dialog>
 			</div>
 		);
 	},

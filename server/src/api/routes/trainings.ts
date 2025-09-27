@@ -1,10 +1,44 @@
+import type { FastifyReply } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { getMatrixTrainings } from "../../services/get-matrix-trainings";
 import { changeTraining } from "../../services/change-trainings";
 import { createTraining } from "../../services/create-trainings";
 import { deleteTrainings } from "../../services/delete-trainings";
+import { AppError } from "../../services/errors";
 import { getTrainingById, getTrainings } from "../../services/get-trainings";
+import {
+	createTrainingRecord,
+	deleteTrainingRecord,
+	updateTrainingRecord,
+} from "../../services/trainings-crud";
+
+const trainingIdParamSchema = z.object({
+	id: z.string().min(1, "Identificador é obrigatório"),
+});
+
+const createTrainingSchema = z.object({
+	nome: z.string().min(1, "Nome é obrigatório"),
+	validade: z.number().positive("Validade deve ser maior que zero"),
+});
+
+const updateTrainingSchema = createTrainingSchema
+	.partial()
+	.refine((data) => Object.keys(data).length > 0, {
+		message: "Informe ao menos um campo para atualização",
+	});
+
+function handleError(reply: FastifyReply, error: unknown) {
+	if (error instanceof AppError) {
+		return reply
+			.status(error.statusCode)
+			.send({ success: false, error: error.message, details: error.details });
+	}
+
+	reply.log.error({ err: error }, "Erro inesperado na rota de treinamentos");
+	return reply
+		.status(500)
+		.send({ success: false, error: "Erro interno no servidor" });
+}
 
 export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 	app.get(
@@ -39,6 +73,59 @@ export const TrainingsRoute: FastifyPluginAsyncZod = async (app) => {
 			});
 		},
 	);
+
+	app.post(
+		"/trainings",
+		{ schema: { body: createTrainingSchema } },
+		async (request, reply) => {
+			try {
+				const body = createTrainingSchema.parse(request.body);
+				const training = await createTrainingRecord(body);
+
+				return reply.status(201).send({
+					success: true,
+					message: "Treinamento criado com sucesso",
+					data: training,
+				});
+			} catch (error) {
+				return handleError(reply, error);
+			}
+		},
+	);
+
+	app.put(
+		"/trainings/:id",
+		{ schema: { body: updateTrainingSchema } },
+		async (request, reply) => {
+			try {
+				const { id } = trainingIdParamSchema.parse(request.params);
+				const body = updateTrainingSchema.parse(request.body);
+				const training = await updateTrainingRecord(id, body);
+
+				return reply.status(200).send({
+					success: true,
+					message: "Treinamento atualizado com sucesso",
+					data: training,
+				});
+			} catch (error) {
+				return handleError(reply, error);
+			}
+		},
+	);
+
+	app.delete("/trainings/:id", async (request, reply) => {
+		try {
+			const { id } = trainingIdParamSchema.parse(request.params);
+			await deleteTrainingRecord(id);
+
+			return reply.status(200).send({
+				success: true,
+				message: "Treinamento removido com sucesso",
+			});
+		} catch (error) {
+			return handleError(reply, error);
+		}
+	});
 
 	app.get("/trainings/:id", async (request, reply) => {
 		const { id } = request.params as { id: string };

@@ -45,6 +45,12 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 	>(null);
 	const [rowData, setRowData] = React.useState<TrainingRowData | null>(null);
 
+	const handleDialogClose = React.useCallback(() => {
+		setDialogState(null);
+		setRowData(null);
+
+	}, []);
+
 	const collaboratorId = data.id;
 	const collaboratorName = data.nome;
 
@@ -251,7 +257,11 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 
 			<Dialog
 				open={dialogState === "add"}
-				onOpenChange={(open) => setDialogState(open ? "add" : null)}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleDialogClose();
+					}
+				}}
 				modal={true}
 			>
 				<AddTrainingDialogContent
@@ -259,11 +269,16 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 					collaboratorName={collaboratorName || ""}
 					trainingId={rowData?.id || ""}
 					trainingDescription={rowData?.description || ""}
+					onClose={handleDialogClose}
 				/>
 			</Dialog>
 			<Dialog
 				open={dialogState === "delete"}
-				onOpenChange={(open) => setDialogState(open ? "delete" : null)}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleDialogClose();
+					}
+				}}
 				modal={true}
 			>
 				<ConfirmDeleteTraining
@@ -271,11 +286,16 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 					collaboratorName={collaboratorName || ""}
 					trainingId={rowData?.id || ""}
 					trainingDescription={rowData?.description || ""}
+					onClose={handleDialogClose}
 				/>
 			</Dialog>
 			<Dialog
 				open={dialogState === "deleteAll"}
-				onOpenChange={(open) => setDialogState(open ? "deleteAll" : null)}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleDialogClose();
+					}
+				}}
 				modal={true}
 			>
 				<ConfirmDeleteTraining
@@ -284,6 +304,7 @@ export function DetailCollabTable({ data }: CollabDetailTableProps) {
 					trainingId={rowData?.id || ""}
 					trainingDescription={rowData?.description || ""}
 					allTrainings
+					onClose={handleDialogClose}
 				/>
 			</Dialog>
 		</>

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
 	DialogClose,
 	DialogContent,
@@ -6,21 +6,22 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import dayjs from "dayjs";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import React from "react";
-import { Calendar } from "./ui/calendar";
-import { createTraining } from "@/services/create-trainings";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { createTraining } from "@/services/create-trainings"
+import { Icon } from "@iconify/react/dist/iconify.js"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import dayjs from "dayjs"
+import React from "react"
+import { Calendar } from "./ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 
 interface AddTrainingDialogProps {
 	collaboratorId: string;
 	collaboratorName?: string;
 	trainingId: string;
 	trainingDescription?: string;
+	onClose?: () => void;
 }
 
 export function AddTrainingDialogContent({
@@ -28,14 +29,21 @@ export function AddTrainingDialogContent({
 	collaboratorName,
 	trainingId,
 	trainingDescription,
+ 	onClose,
 }: AddTrainingDialogProps) {
 	const [open, setOpen] = React.useState(false);
 	const [date, setDate] = React.useState<Date | undefined>(undefined);
 	const queryClient = useQueryClient();
+	const isMountedRef = React.useRef(true);
 
 	const mutation = useMutation({
 		mutationFn: createTraining,
 		onSuccess: () => {
+			if (isMountedRef.current) {
+				setDate(undefined);
+				setOpen(false);
+				onClose?.();
+			}
 			queryClient.invalidateQueries({
 				queryKey: ["colaboradores-detail", collaboratorId],
 			});
@@ -48,7 +56,19 @@ export function AddTrainingDialogContent({
 		},
 	});
 
+	React.useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
+
+	const isConfirmDisabled =
+		mutation.status === "pending" || !collaboratorId || !trainingId;
+
 	function handleConfirm() {
+		if (isConfirmDisabled) {
+			return;
+		}
 		mutation.mutate({
 			colaboradorId: collaboratorId,
 			treinamentoId: trainingId,
@@ -104,17 +124,15 @@ export function AddTrainingDialogContent({
 				<DialogClose asChild>
 					<Button variant="outline">Cancelar</Button>
 				</DialogClose>
-				<DialogClose asChild>
-					<Button
-						onClick={handleConfirm}
-						disabled={mutation.status === "pending"}
-						type="submit"
-					>
-						{mutation.status === "pending"
-							? "Salvando..."
-							: "Confirmar treinamento"}
-					</Button>
-				</DialogClose>
+				<Button
+					onClick={handleConfirm}
+					disabled={isConfirmDisabled}
+					type="submit"
+				>
+					{mutation.status === "pending"
+						? "Salvando..."
+						: "Confirmar treinamento"}
+				</Button>
 			</DialogFooter>
 		</DialogContent>
 	);

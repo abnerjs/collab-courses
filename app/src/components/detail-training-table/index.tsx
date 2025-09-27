@@ -44,6 +44,28 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 	>(null);
 	const [rowData, setRowData] = React.useState<CollabRowData | null>(null);
 
+	const handleDialogClose = React.useCallback(() => {
+		setDialogState(null);
+		setRowData(null);
+		if (typeof document !== "undefined") {
+			document.body.style.removeProperty("pointer-events");
+		}
+	}, []);
+
+	React.useEffect(() => {
+		if (!dialogState && typeof document !== "undefined") {
+			document.body.style.removeProperty("pointer-events");
+		}
+	}, [dialogState]);
+
+	React.useEffect(() => {
+		return () => {
+			if (typeof document !== "undefined") {
+				document.body.style.removeProperty("pointer-events");
+			}
+		};
+	}, []);
+
 	const columns: ColumnDef<CollabComplete>[] = [
 		{
 			accessorKey: "colaborador",
@@ -226,7 +248,11 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 
 			<Dialog
 				open={dialogState === "add"}
-				onOpenChange={(open) => setDialogState(open ? "add" : null)}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleDialogClose();
+					}
+				}}
 				modal={true}
 			>
 				<AddTrainingDialogContent
@@ -234,11 +260,16 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					collaboratorName={rowData?.description || ""}
 					trainingId={data.id || ""}
 					trainingDescription={data.nome || ""}
+					onClose={handleDialogClose}
 				/>
 			</Dialog>
 			<Dialog
 				open={dialogState === "delete"}
-				onOpenChange={(open) => setDialogState(open ? "delete" : null)}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleDialogClose();
+					}
+				}}
 				modal={true}
 			>
 				<ConfirmDeleteTraining
@@ -246,11 +277,16 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					collaboratorName={rowData?.description || ""}
 					trainingId={data.id || ""}
 					trainingDescription={data.nome || ""}
+					onClose={handleDialogClose}
 				/>
 			</Dialog>
 			<Dialog
 				open={dialogState === "deleteAll"}
-				onOpenChange={(open) => setDialogState(open ? "deleteAll" : null)}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleDialogClose();
+					}
+				}}
 				modal={true}
 			>
 				<ConfirmDeleteTraining
@@ -259,6 +295,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					trainingId={data.id || ""}
 					trainingDescription={data.nome || ""}
 					allTrainings
+					onClose={handleDialogClose}
 				/>
 			</Dialog>
 		</>

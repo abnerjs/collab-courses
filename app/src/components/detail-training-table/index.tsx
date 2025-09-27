@@ -16,16 +16,17 @@ import {
 } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import * as React from "react"
-import { AddTrainingDialogContent } from "../add-training-dialog"
-import { ConfirmDeleteTraining } from "../confirm-delete-training"
 import { Badge } from "../ui/badge"
-import { Dialog } from "../ui/dialog"
 import { Label } from "../ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { MainTable } from "./main-table"
 
 interface TrainingDetailTableProps {
 	data: TrainingDetailResponse;
+	onDialogOpen: (
+		type: "add" | "delete" | "deleteAll",
+		row: CollabRowData,
+	) => void;
 }
 
 export interface CollabRowData {
@@ -33,38 +34,12 @@ export interface CollabRowData {
 	description: string;
 }
 
-export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
+export function DetailTrainingTable({ data, onDialogOpen }: TrainingDetailTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
 		[],
 	);
-	const [dialogState, setDialogState] = React.useState<
-		"add" | "delete" | "deleteAll" | null
-	>(null);
-	const [rowData, setRowData] = React.useState<CollabRowData | null>(null);
-
-	const handleDialogClose = React.useCallback(() => {
-		setDialogState(null);
-		setRowData(null);
-		if (typeof document !== "undefined") {
-			document.body.style.removeProperty("pointer-events");
-		}
-	}, []);
-
-	React.useEffect(() => {
-		if (!dialogState && typeof document !== "undefined") {
-			document.body.style.removeProperty("pointer-events");
-		}
-	}, [dialogState]);
-
-	React.useEffect(() => {
-		return () => {
-			if (typeof document !== "undefined") {
-				document.body.style.removeProperty("pointer-events");
-			}
-		};
-	}, []);
 
 	const columns: ColumnDef<CollabComplete>[] = [
 		{
@@ -195,8 +170,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 						<MainTable
 							table={tableTodos}
 							columns={columns}
-							setRowData={setRowData}
-							setDialogState={setDialogState}
+							onDialogOpen={onDialogOpen}
 						/>
 					)}
 				</TabsContent> */}
@@ -207,8 +181,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					<MainTable
 						table={tableNoPrazo}
 						columns={columns}
-						setRowData={setRowData}
-						setDialogState={setDialogState}
+						onDialogOpen={onDialogOpen}
 					/>
 				</TabsContent>
 				<TabsContent
@@ -218,8 +191,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					<MainTable
 						table={tableVencendo}
 						columns={columns}
-						setRowData={setRowData}
-						setDialogState={setDialogState}
+						onDialogOpen={onDialogOpen}
 					/>
 				</TabsContent>
 				<TabsContent
@@ -229,8 +201,7 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					<MainTable
 						table={tableVencido}
 						columns={columns}
-						setRowData={setRowData}
-						setDialogState={setDialogState}
+						onDialogOpen={onDialogOpen}
 					/>
 				</TabsContent>
 				<TabsContent
@@ -240,64 +211,10 @@ export function DetailTrainingTable({ data }: TrainingDetailTableProps) {
 					<MainTable
 						table={tableNaoRealizado}
 						columns={columns}
-						setRowData={setRowData}
-						setDialogState={setDialogState}
+						onDialogOpen={onDialogOpen}
 					/>
 				</TabsContent>
 			</Tabs>
-
-			<Dialog
-				open={dialogState === "add"}
-				onOpenChange={(open) => {
-					if (!open) {
-						handleDialogClose();
-					}
-				}}
-				modal={true}
-			>
-				<AddTrainingDialogContent
-					collaboratorId={rowData?.id || ""}
-					collaboratorName={rowData?.description || ""}
-					trainingId={data.id || ""}
-					trainingDescription={data.nome || ""}
-					onClose={handleDialogClose}
-				/>
-			</Dialog>
-			<Dialog
-				open={dialogState === "delete"}
-				onOpenChange={(open) => {
-					if (!open) {
-						handleDialogClose();
-					}
-				}}
-				modal={true}
-			>
-				<ConfirmDeleteTraining
-					collaboratorId={rowData?.id || ""}
-					collaboratorName={rowData?.description || ""}
-					trainingId={data.id || ""}
-					trainingDescription={data.nome || ""}
-					onClose={handleDialogClose}
-				/>
-			</Dialog>
-			<Dialog
-				open={dialogState === "deleteAll"}
-				onOpenChange={(open) => {
-					if (!open) {
-						handleDialogClose();
-					}
-				}}
-				modal={true}
-			>
-				<ConfirmDeleteTraining
-					collaboratorId={rowData?.id || ""}
-					collaboratorName={rowData?.description || ""}
-					trainingId={data.id || ""}
-					trainingDescription={data.nome || ""}
-					allTrainings
-					onClose={handleDialogClose}
-				/>
-			</Dialog>
 		</>
 	);
 }

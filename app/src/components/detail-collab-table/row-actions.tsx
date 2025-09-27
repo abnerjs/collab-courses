@@ -1,7 +1,6 @@
 import type { TreinamentoComplete } from "@/services/detail-collab"
 import { Icon } from "@iconify/react/dist/iconify.js"
 import type { Row } from "@tanstack/react-table"
-import type * as React from "react"
 import type { TrainingRowData } from "."
 import { Button } from "../ui/button"
 import {
@@ -14,26 +13,24 @@ import {
 
 export const RowActions = ({
 	row,
-	setRowData,
-	setDialogState,
+	onDialogOpen,
 }: {
 	row: Row<TreinamentoComplete>;
-	setRowData: React.Dispatch<React.SetStateAction<TrainingRowData | null>>;
-	setDialogState: React.Dispatch<
-		React.SetStateAction<"add" | "delete" | "deleteAll" | null>
-	>;
+	onDialogOpen: (
+		type: "add" | "delete" | "deleteAll",
+		row: TrainingRowData,
+	) => void;
 }) => {
 	const handleDialogOpen = (type: "add" | "delete" | "deleteAll") => {
-		setRowData({
+		onDialogOpen(type, {
 			id: row.original.treinamentoId,
 			description: row.original.nome,
 		});
-		setDialogState(type);
 	};
 
 	return (
 		<>
-			<DropdownMenu key={`actions-menu-${row.original.treinamentoId}`}>
+			<DropdownMenu modal={false} key={`actions-menu-${row.original.treinamentoId}`}>
 				<DropdownMenuTrigger asChild>
 					<Button
 						variant="secondary"

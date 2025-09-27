@@ -1,4 +1,7 @@
-import type * as React from "react";
+import type { CollabComplete } from "@/services/detail-trainings"
+import type { ColumnDef, useReactTable } from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table"
+import type { CollabRowData } from "."
 import {
 	Table,
 	TableBody,
@@ -6,28 +9,19 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "../ui/table";
-import { RowActions } from "./row-actions";
-import { flexRender } from "@tanstack/react-table";
-import type { ColumnDef, useReactTable } from "@tanstack/react-table";
-import type { CollabRowData } from ".";
-import type { CollabComplete } from "@/services/detail-trainings";
+} from "../ui/table"
+import { RowActions } from "./row-actions"
 
 interface MainTableProps {
 	table: ReturnType<typeof useReactTable<CollabComplete>>;
 	columns: ColumnDef<CollabComplete>[];
-	setRowData: React.Dispatch<React.SetStateAction<CollabRowData | null>>;
-	setDialogState: React.Dispatch<
-		React.SetStateAction<"add" | "delete" | "deleteAll" | null>
-	>;
+	onDialogOpen: (
+		type: "add" | "delete" | "deleteAll",
+		row: CollabRowData,
+	) => void;
 }
 
-export function MainTable({
-	table,
-	columns,
-	setRowData,
-	setDialogState,
-}: MainTableProps) {
+export function MainTable({ table, columns, onDialogOpen }: MainTableProps) {
 	return (
 		<div className="flex flex-1 overflow-hidden rounded-lg border">
 			<Table>
@@ -67,8 +61,7 @@ export function MainTable({
 											{cell.column.id === "actions" ? (
 												<RowActions
 													row={row}
-													setRowData={setRowData}
-													setDialogState={setDialogState}
+													onDialogOpen={onDialogOpen}
 												/>
 											) : (
 												flexRender(

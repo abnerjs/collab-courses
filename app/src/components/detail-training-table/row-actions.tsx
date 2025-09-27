@@ -1,7 +1,6 @@
 import type { CollabComplete } from "@/services/detail-trainings"
 import { Icon } from "@iconify/react/dist/iconify.js"
 import type { Row } from "@tanstack/react-table"
-import type * as React from "react"
 import type { CollabRowData } from "."
 import { Button } from "../ui/button"
 import {
@@ -14,26 +13,24 @@ import {
 
 export const RowActions = ({
 	row,
-	setRowData,
-	setDialogState,
+	onDialogOpen,
 }: {
 	row: Row<CollabComplete>;
-	setRowData: React.Dispatch<React.SetStateAction<CollabRowData | null>>;
-	setDialogState: React.Dispatch<
-		React.SetStateAction<"add" | "delete" | "deleteAll" | null>
-	>;
+	onDialogOpen: (
+		type: "add" | "delete" | "deleteAll",
+		row: CollabRowData,
+	) => void;
 }) => {
 	const handleDialogOpen = (type: "add" | "delete" | "deleteAll") => {
-		setRowData({
+		onDialogOpen(type, {
 			id: row.original.id,
 			description: row.original.nome,
 		});
-		setDialogState(type);
 	};
 
 	return (
 		<>
-			<DropdownMenu key={`actions-menu-${row.original.id}`}>
+			<DropdownMenu modal={false} key={`actions-menu-${row.original.id}`}>
 				<DropdownMenuTrigger asChild>
 					<Button
 						variant="secondary"

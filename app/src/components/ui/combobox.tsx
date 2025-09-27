@@ -44,7 +44,7 @@ export function Combobox({
   const [open, setOpen] = React.useState(false)
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal={true}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -59,10 +59,7 @@ export function Combobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-full p-0 pointer-events-auto" 
-        style={{ zIndex: 9999 }}
-      >
+      <PopoverContent className="w-full p-0 z-50">
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
